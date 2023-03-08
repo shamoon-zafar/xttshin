@@ -3,7 +3,7 @@
 RUN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 echo $RUN_DIR
 # download Path Nirvana Sinhala dataset
-#wget http://data.keithito.com/data/speech/LJSpeech-1.1.tar.bz2
+wget https://github.com/pnfo/sinhala-tts-dataset/releases/download/v1.0/pn_dataset.tar.bz2
 # extract
 mkdir pn_dataset
 tar -xjf pn_dataset.tar.bz2 --directory pn_dataset
