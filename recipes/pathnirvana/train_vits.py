@@ -41,22 +41,28 @@ config = VitsConfig(
         eos="<EOS>",
         bos="<BOS>",
         blank="<BLNK>",
-        characters=" !'(),-.:;?ංඃඅආඇඈඉඊඋඌඍඑඒඓඔඕඖකඛගඝඞඟචඡජඣඤඥටඨඩඪණඬතථදධනඳපඵබභමඹයරලවශෂසහළෆ\u0DCA\u0DCF\u0DD0\u0DD1\u0DD2\u0DD3\u0DD4\u0DD6\u0DD8\u0DD9\u0DDA\u0DDB\u0DDC\u0DDD\u0DDE\u0DDF\u0DF2",
+        #characters=" !'(),-.:;?ංඃඅආඇඈඉඊඋඌඍඑඒඓඔඕඖකඛගඝඞඟචඡජඣඤඥටඨඩඪණඬතථදධනඳපඵබභමඹයරලවශෂසහළෆ\u0DCA\u0DCF\u0DD0\u0DD1\u0DD2\u0DD3\u0DD4\u0DD6\u0DD8\u0DD9\u0DDA\u0DDB\u0DDC\u0DDD\u0DDE\u0DDF\u0DF2",
+        characters=" !'(),-.:;?abcdefghijklmnoprstuvyæñāēīōśşūǣḍḥḷṁṅṇṉṛṝṭ",
         punctuations=" !'(),-.:;?",
         phonemes=None,
         is_unique=True,
         is_sorted=True,
     ),
     test_sentences=[
-        ["එහි දී සුප්පිය පිරිවැජි නොයෙක් කරුණින් බුදුරජාණන් වහන්සේට දොස් කියයි,"],
-        ["ඉක්බිති රෑ අලුයම්හි නැගී සිටි, නිෂීදන ශාලායෙහි රැස් වැ හුන් බොහෝ භික්‍ෂූන් අතරැ මේ කථාව පහළ විය:"],
-        ["නො හෙතං භන්තෙ."],
-        ["එය මෙතෙකැයි ප්රමාණ කරන්නට ද නුපුළුවන."], # in dataset
-        ["ඉදින් පිළිකුල් දැයෙහිත් නොපිළිකුල් දැයෙහිත් පිළිකුල් සංඥාව ඇති වැ වෙසෙම් වා යි කැමැති වේ ද එහි පිළිකුල් සංඥාව ඇතිවැ වෙසෙයි."], # in dataset
+        ["ehi dī suppiya pirivæji noyek karuṇin budurajāṇan vahansēṭa dos kiyayi,"],
+        ["ikbiti rǣ aluyamhi nægī siṭi, nişīdana śālāyehi ræs væ hun bohō bhikşūn ataræ mē kathāva pahaḷa viya:"],
+        ["no hetaṁ bhante."],
+        ["eya metekæyi pramāṇa karannaṭa da nupuḷuvana."], # in dataset
+        ["idin piḷikul dæyehit nopiḷikul dæyehit piḷikul saṁgnāva æti væ vesem vā yi kæmæti vē da ehi piḷikul saṁgnāva ætivæ veseyi."],
+        #["එහි දී සුප්පිය පිරිවැජි නොයෙක් කරුණින් බුදුරජාණන් වහන්සේට දොස් කියයි,"],
+        #["ඉක්බිති රෑ අලුයම්හි නැගී සිටි, නිෂීදන ශාලායෙහි රැස් වැ හුන් බොහෝ භික්‍ෂූන් අතරැ මේ කථාව පහළ විය:"],
+        #["නො හෙතං භන්තෙ."],
+        #["එය මෙතෙකැයි ප්රමාණ කරන්නට ද නුපුළුවන."], # in dataset
+        #["ඉදින් පිළිකුල් දැයෙහිත් නොපිළිකුල් දැයෙහිත් පිළිකුල් සංඥාව ඇති වැ වෙසෙම් වා යි කැමැති වේ ද එහි පිළිකුල් සංඥාව ඇතිවැ වෙසෙයි."], # in dataset
     ],
     print_step=25,
     print_eval=True,
-    mixed_precision=True,
+    mixed_precision=True, # try with false since other multilanguage training was done like that
     output_path=output_path,
     datasets=[dataset_config],
     cudnn_benchmark=False,
