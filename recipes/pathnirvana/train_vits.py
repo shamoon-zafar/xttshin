@@ -14,7 +14,12 @@ dataset_config = BaseDatasetConfig(
     formatter="ljspeech", meta_file_train="metadata.csv", path=os.path.join(output_path, "pn_dataset/")
 )
 audio_config = VitsAudioConfig(
-    sample_rate=22050, win_length=1024, hop_length=256, num_mels=80, mel_fmin=0, mel_fmax=None
+    sample_rate=22050, 
+    win_length=1024, 
+    hop_length=256, 
+    num_mels=80, 
+    mel_fmin=0, 
+    mel_fmax=None
 )
 
 config = VitsConfig(
@@ -66,6 +71,8 @@ config = VitsConfig(
     output_path=output_path,
     datasets=[dataset_config],
     cudnn_benchmark=False,
+    eval_split_max_size=200, # max number of eval samples 
+    eval_split_size=0.1, # 10% of the samples to eval
 )
 
 # INITIALIZE THE AUDIO PROCESSOR
@@ -89,6 +96,9 @@ train_samples, eval_samples = load_tts_samples(
     eval_split_max_size=config.eval_split_max_size,
     eval_split_size=config.eval_split_size,
 )
+print(len(train_samples))
+print(len(eval_samples))
+exit()
 
 # init model
 model = Vits(config, ap, tokenizer, speaker_manager=None)
