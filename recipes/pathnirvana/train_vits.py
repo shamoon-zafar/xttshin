@@ -73,8 +73,6 @@ config = VitsConfig(
     cudnn_benchmark=False,
     eval_split_max_size=200, # max number of eval samples 
     eval_split_size=0.1, # 10% of the samples to eval
-    lr_gen=0.0004, # try increase to 4 from default 2
-    lr_disc=0.0004,
 )
 
 # INITIALIZE THE AUDIO PROCESSOR
