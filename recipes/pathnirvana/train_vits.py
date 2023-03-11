@@ -39,7 +39,7 @@ config = VitsConfig(
     #phoneme_cache_path=os.path.join(output_path, "phoneme_cache"),
     compute_input_seq_cache=True,
     max_audio_len=16 * 22050, # audio longer than this will be ignored
-    add_blank=False, # this is by default true for vits, not sure if needed, if false training would be faster
+    add_blank=True, # this is by default true for vits, not sure if needed, speed is not changed by much
     characters=CharactersConfig(
         characters_class="TTS.tts.models.vits.VitsCharacters",
         pad="<PAD>",
@@ -73,6 +73,8 @@ config = VitsConfig(
     cudnn_benchmark=False,
     eval_split_max_size=200, # max number of eval samples 
     eval_split_size=0.1, # 10% of the samples to eval
+    lr_gen=0.0004, # try increase to 4 from default 2
+    lr_disc=0.0004,
 )
 
 # INITIALIZE THE AUDIO PROCESSOR
@@ -96,9 +98,6 @@ train_samples, eval_samples = load_tts_samples(
     eval_split_max_size=config.eval_split_max_size,
     eval_split_size=config.eval_split_size,
 )
-print(len(train_samples))
-print(len(eval_samples))
-exit()
 
 # init model
 model = Vits(config, ap, tokenizer, speaker_manager=None)
