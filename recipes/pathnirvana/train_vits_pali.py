@@ -11,7 +11,7 @@ from TTS.utils.audio import AudioProcessor
 
 output_path = os.path.dirname(os.path.abspath(__file__))
 dataset_config = BaseDatasetConfig(
-    formatter="ljspeech", meta_file_train="metadata.csv", path=os.path.join(output_path, "pn_dataset/")
+    formatter="pathnirvana", meta_file_train="metadata_shuf.csv", path=os.path.join(output_path, "pali_dataset/")
 )
 audio_config = VitsAudioConfig(
     sample_rate=22050, 
@@ -24,7 +24,7 @@ audio_config = VitsAudioConfig(
 
 config = VitsConfig(
     audio=audio_config,
-    run_name="vits_pathnirvana",
+    run_name="vits_pali",
     batch_size=48,
     eval_batch_size=32,
     batch_group_size=5,
