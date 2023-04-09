@@ -38,7 +38,7 @@ config = VitsConfig(
     #phoneme_language="en-us",
     #phoneme_cache_path=os.path.join(output_path, "phoneme_cache"),
     compute_input_seq_cache=True,
-    max_audio_len=16 * 22050, # audio longer than this will be ignored
+    max_audio_len=18 * 22050, # audio longer than this will be ignored
     add_blank=True, # this is by default true for vits, not sure if needed, speed is not changed by much
     characters=CharactersConfig(
         characters_class="TTS.tts.models.vits.VitsCharacters",
@@ -47,23 +47,19 @@ config = VitsConfig(
         bos="<BOS>",
         blank="<BLNK>",
         #characters=" !'(),-.:;?ංඃඅආඇඈඉඊඋඌඍඑඒඓඔඕඖකඛගඝඞඟචඡජඣඤඥටඨඩඪණඬතථදධනඳපඵබභමඹයරලවශෂසහළෆ\u0DCA\u0DCF\u0DD0\u0DD1\u0DD2\u0DD3\u0DD4\u0DD6\u0DD8\u0DD9\u0DDA\u0DDB\u0DDC\u0DDD\u0DDE\u0DDF\u0DF2",
-        characters=" !'(),-.:;?abcdefghijklmnoprstuvyæñāēīōśşūǣḍḥḷṁṅṇṉṛṝṭ",
-        punctuations=" !'(),-.:;?",
+        #characters=" !'(),-.:;?abcdefghijklmnoprstuvyæñāēīōśşūǣḍḥḷṁṅṇṉṛṝṭ",
+        characters=" !#'(),-.:;?abcdeghijklmnoprstuvxyñāīūḍḷṁṅṇṭ",
+        punctuations=" !#'(),-.:;?x",
         phonemes=None,
         is_unique=True,
         is_sorted=True,
     ),
     test_sentences=[
-        ["ehi dī suppiya pirivæji noyek karuṇin budurajāṇan vahansēṭa dos kiyayi,"],
-        ["ikbiti rǣ aluyamhi nægī siṭi, nişīdana śālāyehi ræs væ hun bohō bhikşūn ataræ mē kathāva pahaḷa viya:"],
-        ["no hetaṁ bhante."],
-        ["eya metekæyi pramāṇa karannaṭa da nupuḷuvana."], # in dataset
-        ["idin piḷikul dæyehit nopiḷikul dæyehit piḷikul saṁgnāva æti væ vesem vā yi kæmæti vē da ehi piḷikul saṁgnāva ætivæ veseyi."],
-        #["එහි දී සුප්පිය පිරිවැජි නොයෙක් කරුණින් බුදුරජාණන් වහන්සේට දොස් කියයි,"],
-        #["ඉක්බිති රෑ අලුයම්හි නැගී සිටි, නිෂීදන ශාලායෙහි රැස් වැ හුන් බොහෝ භික්‍ෂූන් අතරැ මේ කථාව පහළ විය:"],
-        #["නො හෙතං භන්තෙ."],
-        #["එය මෙතෙකැයි ප්රමාණ කරන්නට ද නුපුළුවන."], # in dataset
-        #["ඉදින් පිළිකුල් දැයෙහිත් නොපිළිකුල් දැයෙහිත් පිළිකුල් සංඥාව ඇති වැ වෙසෙම් වා යි කැමැති වේ ද එහි පිළිකුල් සංඥාව ඇතිවැ වෙසෙයි."], # in dataset
+        ["suppiyassa pana paribbājakassa antevāsī brahmadatto māṇavo anekapariyāyena buddhassa vaṇṇaṁ bhāsati, dhammassa vaṇṇaṁ bhāsati, saṅghassa vaṇṇaṁ bhāsati."],
+        ["namo tassa bhagavato arahato sammā sambuddhassa"],
+        ["manopubbaṅgamā dhammā manoseṭṭhā manomayā x manasā ce paduṭṭhena bhāsati vā karoti vā x tato naṁ dukkhamanveti, cakkaṁ'va vahato padaṁ."],
+        ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā veramaṇīsikkhāpadaṁ samādiyāmi."],
+        ["sekhabalasaṅkhittasuttaṁ"],
     ],
     print_step=25,
     print_eval=True,
