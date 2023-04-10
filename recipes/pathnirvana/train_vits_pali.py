@@ -38,7 +38,7 @@ config = VitsConfig(
     #phoneme_language="en-us",
     #phoneme_cache_path=os.path.join(output_path, "phoneme_cache"),
     compute_input_seq_cache=True,
-    max_audio_len=18 * 22050, # audio longer than this will be ignored
+    max_audio_len=25 * 22050, # audio longer than this will be ignored
     add_blank=True, # this is by default true for vits, not sure if needed, speed is not changed by much
     characters=CharactersConfig(
         characters_class="TTS.tts.models.vits.VitsCharacters",
@@ -65,8 +65,8 @@ config = VitsConfig(
         #["මාලාගන්ධවිලෙපනධාරණමණ්ඩනවිභූසනට්ඨානා වෙරමණීසික්ඛාපදං සමාදියාමි."],
         #["සෙඛබලසඞ්ඛිත්තසුත්තං"],
     ],
-    print_step=25,
-    print_eval=True,
+    print_step=50,
+    print_eval=False,
     mixed_precision=True, # try with false since other multilanguage training was done like that
     output_path=output_path,
     datasets=[dataset_config],
