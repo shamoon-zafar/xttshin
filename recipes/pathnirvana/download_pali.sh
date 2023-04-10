@@ -5,11 +5,16 @@ echo $RUN_DIR
 # download Path Nirvana Sinhala dataset
 wget https://github.com/pnfo/pali-tts-dataset/releases/download/v1.1/pali_dataset.tar.bz2.partaa
 wget https://github.com/pnfo/pali-tts-dataset/releases/download/v1.1/pali_dataset.tar.bz2.partab
+
+# join files together
+cat pali_dataset.tar.bz2.part* > pali_dataset.tar.bz2
+rm pali_dataset.tar.bz2.part*
+
 # extract
 mkdir pali_dataset
-cat pali_dataset.tar.bz2.part* | tar -xjf --directory pali_dataset
-
+tar -xjf pali_dataset.tar.bz2 --directory pali_dataset
 shuf pali_dataset/metadata.csv > pali_dataset/metadata_shuf.csv
 
+#move to recipes folder 
 mv pali_dataset $RUN_DIR/recipes/pathnirvana/
-rm pali_dataset.tar.bz2.part*
+rm pali_dataset.tar.bz2
