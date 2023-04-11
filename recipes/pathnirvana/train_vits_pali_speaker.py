@@ -46,6 +46,7 @@ config = VitsConfig(
     compute_input_seq_cache=True,
     max_audio_len=25 * 22050, # audio longer than this will be ignored
     add_blank=True, # this is by default true for vits, not sure if needed, speed is not changed by much
+    enable_eos_bos_chars=True,
     characters=CharactersConfig(
         characters_class="TTS.tts.models.vits.VitsCharacters",
         pad="<PAD>",
@@ -60,11 +61,12 @@ config = VitsConfig(
         is_sorted=True,
     ),
     test_sentences=[
-        ["suppiyassa pana paribbājakassa antevāsī brahmadatto māṇavo anekapariyāyena buddhassa vaṇṇaṁ bhāsati, dhammassa vaṇṇaṁ bhāsati, saṅghassa vaṇṇaṁ bhāsati."],
-        ["namo tassa bhagavato arahato sammā sambuddhassa"],
+        ["suppiyassa pana paribbājakassa antevāsī brahmadatto māṇavo anekapariyāyena buddhassa vaṇṇaṁ bhāsati, dhammassa vaṇṇaṁ bhāsati, saṅghassa vaṇṇaṁ bhāsati.", "default", None, None],
+        ["namo tassa bhagavato arahato sammā sambuddhassa", "default", None, None],
         ["manopubbaṅgamā dhammā manoseṭṭhā manomayā x manasā ce paduṭṭhena bhāsati vā karoti vā x tato naṁ dukkhamanveti, cakkaṁ'va vahato padaṁ.", "gatha", None, None],
-        ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā veramaṇīsikkhāpadaṁ samādiyāmi."],
-        ["sekhabalasaṅkhittasuttaṁ"],
+        ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā veramaṇīsikkhāpadaṁ samādiyāmi.", "default", None, None],
+        ["sekhabalasaṅkhittasuttaṁ", "default", None, None],
+        ["yadā have pātubhavanti dhammā x ātāpino jhāyato brāhmaṇassa, x athassa kaṅkhā vapayanti sabbā x yato pajānāti sahetudhammanti.", "default", None, None],
         #["සුප්පියස්ස පන පරිබ්බාජකස්ස අන්තෙවාසී බ්රහ්මදත්තො මාණවො අනෙකපරියායෙන බුද්ධස්ස වණ්ණං භාසති, ධම්මස්ස වණ්ණං භාසති, සඞ්ඝස්ස වණ්ණං භාසති."],
         #["නමො තස්ස භගවතො අරහතො සම්මා සම්බුද්ධස්ස"],
         #["මනොපුබ්බඞ්ගමා ධම්මා මනොසෙට්ඨා මනොමයා x මනසා චෙ පදුට්ඨෙන භාසති වා කරොති වා x තතො නං දුක්ඛමන්වෙති, චක්කං'ව වහතො පදං."],
