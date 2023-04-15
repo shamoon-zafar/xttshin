@@ -69,7 +69,8 @@
                     type="text" name="style_wav">
                 {%endif%}
 
-                <input id="text" placeholder="Type here..." size=45 type="text" name="text">
+                <!-- <input id="text" placeholder="Type here..." size=45 type="text" name="text"> -->
+                <textarea rows="8" cols="80" id="text" name="text"></textarea>
                 <button id="speak-button" name="speak">Speak</button><br /><br />
 
                 {%if use_multi_speaker%}
@@ -112,8 +113,14 @@
         }
         function q(selector) { return document.querySelector(selector) }
         q('#text').focus()
+        function normalizeText(text) {
+            text = text.toLowerCase().replace(/ṃ/g, 'ṁ')
+            text = text.replace(/["“”‘’]/g, "'") // all quotes to single straight quotes
+            text = text.replace(/[-–—]+/g, '-')
+            return text
+        }
         function do_tts(e) {
-            const text = q('#text').value
+            const text = normalizeText(q('#text').value)
             const speaker_id = getTextValue('#speaker_id')
             const style_wav = getTextValue('#style_wav')
             const language_id = getTextValue('#language_id')

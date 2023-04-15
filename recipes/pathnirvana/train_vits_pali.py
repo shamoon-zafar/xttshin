@@ -15,12 +15,20 @@ dataset_config = BaseDatasetConfig(
 )
 audio_config = VitsAudioConfig(
     sample_rate=22050, 
-    win_length=1024, 
-    hop_length=256, 
-    num_mels=80, 
-    mel_fmin=0, 
-    mel_fmax=None
+    win_length=1024, # can reduce
+    hop_length=256, # can not change
+    num_mels=80, # can increase
+    mel_fmin=0, #  50 recommended for male voices
+    mel_fmax=None # has to be less than half of sample rate
 )
+# audio_config = VitsAudioConfig( # used for training (4)
+#     sample_rate=22050, 
+#     win_length=768,
+#     hop_length=256, 
+#     num_mels=128, # increased from 80
+#     mel_fmin=40,  # from 0 to 40
+#     mel_fmax=11025 # has to be less than half of sample rate (was None)
+# )
 
 config = VitsConfig(
     audio=audio_config,
