@@ -31,7 +31,7 @@ config = VitsConfig(
     audio=audio_config,
     run_name="vits_sinhala_speaker",
     use_speaker_embedding=True,
-    batch_size=48,
+    batch_size=56,
     eval_batch_size=32,
     batch_group_size=5,
     num_loader_workers=8,
@@ -62,11 +62,11 @@ config = VitsConfig(
     test_sentences=[
         ["namo tassa bhagavato arahato sammā sambuddhassa", "mettananda", None, None],
         ["manopubbaṅgamā dhammā manoseṭṭhā manomayā ... manasā ce paduṭṭhena bhāsati vā karoti vā ... tato naṁ dukkhamanveti, cakkaṁ'va vahato padaṁ.", "oshadi", None, None],
-        ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā akşara vinyāsaya ho naṇalaḷa bhedaya nosalakā sevīma kaḷa yutu nam iṃgrīsi akuru yodāganna", "mettananda", None, None],
+        ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā akşara vinyāsaya ho naṇalaḷa bhedaya nosalakā sevīma kaḷa yutu nam iṁgrīsi akuru yodāganna", "mettananda", None, None],
         ["ehi dī suppiya pirivæji noyek karuṇin budurajāṇan vahansēṭa dos kiyayi,", "mettananda", None, None],
         ["ikbiti rǣ aluyamhi nægī siṭi, nişīdana śālāyehi ræs væ hun bohō bhikşūn ataræ mē kathāva pahaḷa viya:", "mettananda", None, None],
         ["no hētaṁ bhantē.", "mettananda", None, None],
-        ["luṇu jivhāviññeyya dæ?” yi kīha. “ese ya, maharajāneni, divaṭa dænenne ya” yi kīseka. “svāmīni, kimek da?", "oshadi", None, None], 
+        ["'luṇu jivhāviññeyya dæ?' yi kīha. 'ese ya, maharajāneni, divaṭa dænenne ya' yi kīseka. 'svāmīni, kimek da?'", "oshadi", None, None], 
         ["idin piḷikul dæyehit nopiḷikul dæyehit piḷikul saṁgnāva æti væ vesem vā yi kæmæti vē da ehi piḷikul saṁgnāva ætivæ veseyi.", "mettananda", None, None], # in dataset
         #["එහි දී සුප්පිය පිරිවැජි නොයෙක් කරුණින් බුදුරජාණන් වහන්සේට දොස් කියයි,"],
         #["ඉක්බිති රෑ අලුයම්හි නැගී සිටි, නිෂීදන ශාලායෙහි රැස් වැ හුන් බොහෝ භික්‍ෂූන් අතරැ මේ කථාව පහළ විය:"],
