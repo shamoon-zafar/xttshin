@@ -3,7 +3,7 @@
 RUN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 echo $RUN_DIR
 # download Path Nirvana Sinhala dataset
-wget https://github.com/pnfo/sinhala-tts-dataset/releases/download/v1.2/sinhala_dataset.tar.bz2
+wget https://github.com/pnfo/sinhala-tts-dataset/releases/download/v2.0/sinhala_dataset.tar.bz2
 # extract
 mkdir sinhala_dataset
 tar -xjf sinhala_dataset.tar.bz2 --directory sinhala_dataset
