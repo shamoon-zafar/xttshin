@@ -60,7 +60,7 @@ config = VitsConfig(
         is_sorted=True,
     ),
     test_sentences=[
-        ["namo tassa bhagavato arahato sammā sambuddhassa", None, None, None],
+        ["namo tassa bhagavato arahato sammā sambuddhassa", "mettananda", None, None],
         ["manopubbaṅgamā dhammā manoseṭṭhā manomayā x manasā ce paduṭṭhena bhāsati vā karoti vā x tato naṁ dukkhamanveti, cakkaṁ'va vahato padaṁ.", "oshadi", None, None],
         ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā veramaṇīsikkhāpadaṁ samādiyāmi.", "mettananda", None, None],
         ["ehi dī suppiya pirivæji noyek karuṇin budurajāṇan vahansēṭa dos kiyayi,", "mettananda", None, None],
