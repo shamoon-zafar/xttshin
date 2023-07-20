@@ -61,8 +61,8 @@ config = VitsConfig(
         is_sorted=True,
     ),
     test_sentences=[
-        ["suppiyassa pana paribbājakassa antevāsī brahmadatto māṇavo anekapariyāyena buddhassa vaṇṇaṁ bhāsati, dhammassa vaṇṇaṁ bhāsati, saṅghassa vaṇṇaṁ bhāsati.", 0, None, None],
-        ["namo tassa bhagavato arahato sammā sambuddhassa", "oshadi", None, None],
+        ["suppiyassa pana paribbājakassa antevāsī brahmadatto māṇavo anekapariyāyena buddhassa vaṇṇaṁ bhāsati, dhammassa vaṇṇaṁ bhāsati, saṅghassa vaṇṇaṁ bhāsati.", "default", None, None],
+        ["namo tassa bhagavato arahato sammā sambuddhassa", "default", None, None],
         ["manopubbaṅgamā dhammā manoseṭṭhā manomayā x manasā ce paduṭṭhena bhāsati vā karoti vā x tato naṁ dukkhamanveti, cakkaṁ'va vahato padaṁ.", "gatha", None, None],
         ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā veramaṇīsikkhāpadaṁ samādiyāmi.", "default", None, None],
         ["sekhabalasaṅkhittasuttaṁ", "default", None, None],
