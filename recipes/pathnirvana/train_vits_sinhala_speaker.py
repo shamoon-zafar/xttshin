@@ -60,14 +60,14 @@ config = VitsConfig(
         is_sorted=True,
     ),
     test_sentences=[
-        ["namo tassa bhagavato arahato sammā sambuddhassa", 0, None, None],
+        ["namo tassa bhagavato arahato sammā sambuddhassa", None, None, None],
         ["manopubbaṅgamā dhammā manoseṭṭhā manomayā x manasā ce paduṭṭhena bhāsati vā karoti vā x tato naṁ dukkhamanveti, cakkaṁ'va vahato padaṁ.", "oshadi", None, None],
-        ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā veramaṇīsikkhāpadaṁ samādiyāmi.", "default", None, None],
-        ["ehi dī suppiya pirivæji noyek karuṇin budurajāṇan vahansēṭa dos kiyayi,", "default", None, None],
-        ["ikbiti rǣ aluyamhi nægī siṭi, nişīdana śālāyehi ræs væ hun bohō bhikşūn ataræ mē kathāva pahaḷa viya:", "default", None, None],
-        ["no hetaṁ bhante.", "default", None, None],
-        ["eya metekæyi pramāṇa karannaṭa da nupuḷuvana.", "default", None, None], # in dataset
-        ["idin piḷikul dæyehit nopiḷikul dæyehit piḷikul saṁgnāva æti væ vesem vā yi kæmæti vē da ehi piḷikul saṁgnāva ætivæ veseyi.", "default", None, None],
+        ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā veramaṇīsikkhāpadaṁ samādiyāmi.", "mettananda", None, None],
+        ["ehi dī suppiya pirivæji noyek karuṇin budurajāṇan vahansēṭa dos kiyayi,", "mettananda", None, None],
+        ["ikbiti rǣ aluyamhi nægī siṭi, nişīdana śālāyehi ræs væ hun bohō bhikşūn ataræ mē kathāva pahaḷa viya:", "mettananda", None, None],
+        ["no hetaṁ bhante.", "mettananda", None, None],
+        ["eya metekæyi pramāṇa karannaṭa da nupuḷuvana.", "mettananda", None, None], # in dataset
+        ["idin piḷikul dæyehit nopiḷikul dæyehit piḷikul saṁgnāva æti væ vesem vā yi kæmæti vē da ehi piḷikul saṁgnāva ætivæ veseyi.", "mettananda", None, None],
         #["එහි දී සුප්පිය පිරිවැජි නොයෙක් කරුණින් බුදුරජාණන් වහන්සේට දොස් කියයි,"],
         #["ඉක්බිති රෑ අලුයම්හි නැගී සිටි, නිෂීදන ශාලායෙහි රැස් වැ හුන් බොහෝ භික්‍ෂූන් අතරැ මේ කථාව පහළ විය:"],
         #["නො හෙතං භන්තෙ."],
