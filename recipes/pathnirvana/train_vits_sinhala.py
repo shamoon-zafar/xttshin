@@ -11,7 +11,7 @@ from TTS.utils.audio import AudioProcessor
 
 output_path = os.path.dirname(os.path.abspath(__file__))
 dataset_config = BaseDatasetConfig(
-    formatter="ljspeech", meta_file_train="metadata_shuf.csv", path=os.path.join(output_path, "sinhala_dataset/")
+    formatter="pathnirvana_mettananda", meta_file_train="metadata_shuf.csv", path=os.path.join(output_path, "sinhala_dataset/")
 )
 audio_config = VitsAudioConfig(
     sample_rate=22050, 
@@ -25,7 +25,7 @@ audio_config = VitsAudioConfig(
 config = VitsConfig(
     audio=audio_config,
     run_name="vits_sinhala",
-    batch_size=48,
+    batch_size=56,
     eval_batch_size=32,
     batch_group_size=5,
     num_loader_workers=8,
@@ -38,7 +38,7 @@ config = VitsConfig(
     #phoneme_language="en-us",
     #phoneme_cache_path=os.path.join(output_path, "phoneme_cache"),
     compute_input_seq_cache=True,
-    max_audio_len=16 * 22050, # audio longer than this will be ignored
+    max_audio_len=15 * 22050, # audio longer than this will be ignored
     add_blank=True, # this is by default true for vits, not sure if needed, speed is not changed by much
     characters=CharactersConfig(
         characters_class="TTS.tts.models.vits.VitsCharacters",
@@ -46,26 +46,28 @@ config = VitsConfig(
         eos="<EOS>",
         bos="<BOS>",
         blank="<BLNK>",
-        #characters=" !'(),-.:;?ංඃඅආඇඈඉඊඋඌඍඑඒඓඔඕඖකඛගඝඞඟචඡජඣඤඥටඨඩඪණඬතථදධනඳපඵබභමඹයරලවශෂසහළෆ\u0DCA\u0DCF\u0DD0\u0DD1\u0DD2\u0DD3\u0DD4\u0DD6\u0DD8\u0DD9\u0DDA\u0DDB\u0DDC\u0DDD\u0DDE\u0DDF\u0DF2",
-        characters=" !'(),-.:;?abcdefghijklmnoprstuvyæñāēīōśşūǣḍḥḷṁṅṇṉṛṝṭ",
-        punctuations=" !'(),-.:;?",
+        characters=" !'(),-.:;=?abcdefghijklmnoprstuvyæñāēīōśşūǣḍḥḷṁṅṇṉṛṝṭ",
+        punctuations=" !'(),-.:;=?",
         phonemes=None,
         is_unique=True,
         is_sorted=True,
     ),
     test_sentences=[
-        ["ehi dī suppiya pirivæji noyek karuṇin budurajāṇan vahansēṭa dos kiyayi,"],
-        ["ikbiti rǣ aluyamhi nægī siṭi, nişīdana śālāyehi ræs væ hun bohō bhikşūn ataræ mē kathāva pahaḷa viya:"],
-        ["no hetaṁ bhante."],
-        ["eya metekæyi pramāṇa karannaṭa da nupuḷuvana."], # in dataset
-        ["idin piḷikul dæyehit nopiḷikul dæyehit piḷikul saṁgnāva æti væ vesem vā yi kæmæti vē da ehi piḷikul saṁgnāva ætivæ veseyi."],
+        ["namo tassa bhagavato arahato sammā sambuddhassa", "mettananda", None, None],
+        ["manopubbaṅgamā dhammā manoseṭṭhā manomayā ... manasā ce paduṭṭhena bhāsati vā karoti vā ... tato naṁ dukkhamanveti, cakkaṁ'va vahato padaṁ.", "oshadi", None, None],
+        ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā akşara vinyāsaya ho naṇalaḷa bhedaya nosalakā sevīma kaḷa yutu nam iṁgrīsi akuru yodāganna", "mettananda", None, None],
+        ["ehi dī suppiya pirivæji noyek karuṇin budurajāṇan vahansēṭa dos kiyayi,", "mettananda", None, None],
+        ["ikbiti rǣ aluyamhi nægī siṭi, nişīdana śālāyehi ræs væ hun bohō bhikşūn ataræ mē kathāva pahaḷa viya:", "mettananda", None, None],
+        ["no hētaṁ bhantē.", "mettananda", None, None],
+        ["'luṇu jivhāviññeyya dæ?' yi kīha. 'ese ya, maharajāneni, divaṭa dænenne ya' yi kīseka. 'svāmīni, kimek da?'", "oshadi", None, None], 
+        ["idin piḷikul dæyehit nopiḷikul dæyehit piḷikul saṁgnāva æti væ vesem vā yi kæmæti vē da ehi piḷikul saṁgnāva ætivæ veseyi.", "mettananda", None, None], # in dataset
         #["එහි දී සුප්පිය පිරිවැජි නොයෙක් කරුණින් බුදුරජාණන් වහන්සේට දොස් කියයි,"],
         #["ඉක්බිති රෑ අලුයම්හි නැගී සිටි, නිෂීදන ශාලායෙහි රැස් වැ හුන් බොහෝ භික්‍ෂූන් අතරැ මේ කථාව පහළ විය:"],
         #["නො හෙතං භන්තෙ."],
         #["එය මෙතෙකැයි ප්රමාණ කරන්නට ද නුපුළුවන."], # in dataset
         #["ඉදින් පිළිකුල් දැයෙහිත් නොපිළිකුල් දැයෙහිත් පිළිකුල් සංඥාව ඇති වැ වෙසෙම් වා යි කැමැති වේ ද එහි පිළිකුල් සංඥාව ඇතිවැ වෙසෙයි."], # in dataset
     ],
-    print_step=25,
+    print_step=50,
     print_eval=True,
     mixed_precision=True, # try with false since other multilanguage training was done like that
     output_path=output_path,
