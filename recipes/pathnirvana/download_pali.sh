@@ -3,8 +3,8 @@
 RUN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 echo $RUN_DIR
 # download Path Nirvana Sinhala dataset
-wget https://github.com/pnfo/pali-tts-dataset/releases/download/v1.1/pali_dataset.tar.bz2.partaa
-wget https://github.com/pnfo/pali-tts-dataset/releases/download/v1.1/pali_dataset.tar.bz2.partab
+wget https://github.com/pnfo/pali-tts-dataset/releases/download/v1.4/pali_dataset.tar.bz2.partaa
+wget https://github.com/pnfo/pali-tts-dataset/releases/download/v1.4/pali_dataset.tar.bz2.partab
 
 # join files together
 cat pali_dataset.tar.bz2.part* > pali_dataset.tar.bz2

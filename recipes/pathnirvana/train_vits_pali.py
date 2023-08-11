@@ -11,7 +11,7 @@ from TTS.utils.audio import AudioProcessor
 
 output_path = os.path.dirname(os.path.abspath(__file__))
 dataset_config = BaseDatasetConfig(
-    formatter="pathnirvana", meta_file_train="metadata_shuf.csv", path=os.path.join(output_path, "pali_dataset/")
+    formatter="pathnirvana_mettananda", meta_file_train="metadata_shuf.csv", path=os.path.join(output_path, "pali_dataset/")
 )
 audio_config = VitsAudioConfig(
     sample_rate=22050, 
@@ -55,31 +55,35 @@ config = VitsConfig(
         bos="<BOS>",
         blank="<BLNK>",
         #characters=" !#'(),-.:;?xංඅආඉඊඋඌඑඔකඛගඝඞචඡජඣඤටඨඩඪණතථදධනපඵබභමයරලවසහළ්ාිීුූෙො",
-        characters=" !#'(),-.:;?abcdeghijklmnoprstuvxyñāīūḍḷṁṅṇṭ",
-        punctuations=" !#'(),-.:;?x",
+        characters=" '(),-.:;?abcdeghijklmnoprstuvxyñāīūḍḷṃṅṇṭ",
+        punctuations=" '(),-.:;?x",
         phonemes=None,
         is_unique=True,
         is_sorted=True,
     ),
     test_sentences=[
-        ["suppiyassa pana paribbājakassa antevāsī brahmadatto māṇavo anekapariyāyena buddhassa vaṇṇaṁ bhāsati, dhammassa vaṇṇaṁ bhāsati, saṅghassa vaṇṇaṁ bhāsati."],
+        ["suppiyassa pana paribbājakassa antevāsī brahmadatto māṇavo anekapariyāyena buddhassa vaṇṇaṃ bhāsati, dhammassa vaṇṇaṃ bhāsati, saṅghassa vaṇṇaṃ bhāsati."],
         ["namo tassa bhagavato arahato sammā sambuddhassa"],
-        ["manopubbaṅgamā dhammā manoseṭṭhā manomayā x manasā ce paduṭṭhena bhāsati vā karoti vā x tato naṁ dukkhamanveti, cakkaṁ'va vahato padaṁ."],
-        ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā veramaṇīsikkhāpadaṁ samādiyāmi."],
-        ["sekhabalasaṅkhittasuttaṁ"],
+        ["manopubbaṅgamā dhammā manoseṭṭhā manomayā x manasā ce paduṭṭhena bhāsati vā karoti vā x tato naṃ dukkhamanveti, cakkaṃ'va vahato padaṃ."],
+        ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā veramaṇīsikkhāpadaṃ samādiyāmi."],
+        ["sekhabalasaṅkhittasuttaṃ"],
+        ["yo brāhmaṇo bāhitapāpadhammo x nihuhuṅko nikkasāvo yatatto x vedantagū vusitabrahmacariyo"],
+        ["kittāvatā saccānaṃ saccapaññatti: yāvatā cattāri saccāni, dukkhasaccaṃ samudayasaccaṃ nirodhasaccaṃ maggasaccaṃ. ettāvatā saccānaṃ saccapaññatti."],
         #["සුප්පියස්ස පන පරිබ්බාජකස්ස අන්තෙවාසී බ්රහ්මදත්තො මාණවො අනෙකපරියායෙන බුද්ධස්ස වණ්ණං භාසති, ධම්මස්ස වණ්ණං භාසති, සඞ්ඝස්ස වණ්ණං භාසති."],
         #["නමො තස්ස භගවතො අරහතො සම්මා සම්බුද්ධස්ස"],
         #["මනොපුබ්බඞ්ගමා ධම්මා මනොසෙට්ඨා මනොමයා x මනසා චෙ පදුට්ඨෙන භාසති වා කරොති වා x තතො නං දුක්ඛමන්වෙති, චක්කං'ව වහතො පදං."],
         #["මාලාගන්ධවිලෙපනධාරණමණ්ඩනවිභූසනට්ඨානා වෙරමණීසික්ඛාපදං සමාදියාමි."],
         #["සෙඛබලසඞ්ඛිත්තසුත්තං"],
+        #["යො බ්‍රාහ්මණො බාහිතපාපධම්මො x නිහුහුඞ්කො නික්කසාවො යතත්තො x වෙදන්තගූ වුසිතබ්‍රහ්මචරියො"],
+        #["කිත්තාවතා සච්චානං සච්චපඤ්ඤත්ති: යාවතා චත්තාරි සච්චානි, දුක්ඛසච්චං සමුදයසච්චං නිරොධසච්චං මග්ගසච්චං. එත්තාවතා සච්චානං සච්චපඤ්ඤත්ති."],
     ],
-    print_step=50,
+    print_step=100,
     print_eval=False,
     mixed_precision=True, # try with false since other multilanguage training was done like that
     output_path=output_path,
     datasets=[dataset_config],
     cudnn_benchmark=False,
-    eval_split_max_size=200, # max number of eval samples 
+    eval_split_max_size=300, # max number of eval samples 
     eval_split_size=0.1, # 10% of the samples to eval
 )
 
