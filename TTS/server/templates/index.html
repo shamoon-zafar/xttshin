@@ -71,7 +71,10 @@
 
                 <!-- <input id="text" placeholder="Type here..." size=45 type="text" name="text"> -->
                 <textarea rows="8" cols="80" id="text" name="text"></textarea>
-                <button id="speak-button" name="speak">Speak</button><br /><br />
+                <button id="speak-button" name="speak">Speak</button><br />
+                <label for="m-convert">convert ṃ => ṁ</label>
+                <input type="checkbox" name="m-convert" id="m-convert" value="true">
+                <br />
 
                 {%if use_multi_speaker%}
                 Choose a speaker:
@@ -114,7 +117,10 @@
         function q(selector) { return document.querySelector(selector) }
         q('#text').focus()
         function normalizeText(text) {
-            text = text.toLowerCase().replace(/ṃ/g, 'ṁ')
+            text = text.toLowerCase()
+            if (q('#m-convert').checked) {
+                text = text.replace(/ṃ/g, 'ṁ')
+            }
             text = text.replace(/["“”‘’]/g, "'") // all quotes to single straight quotes
             text = text.replace(/[-–—]+/g, '-')
             return text
