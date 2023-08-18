@@ -33,7 +33,7 @@ audio_config = VitsAudioConfig(
 config = VitsConfig(
     audio=audio_config,
     run_name="vits_pali",
-    batch_size=54,
+    batch_size=38,
     eval_batch_size=32,
     batch_group_size=5,
     num_loader_workers=8,
@@ -66,7 +66,7 @@ config = VitsConfig(
         ["namo tassa bhagavato arahato sammā sambuddhassa"],
         ["manopubbaṅgamā dhammā manoseṭṭhā manomayā x manasā ce paduṭṭhena bhāsati vā karoti vā x tato naṃ dukkhamanveti, cakkaṃ'va vahato padaṃ."],
         ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā veramaṇīsikkhāpadaṃ samādiyāmi."],
-        ["sekhabalasaṅkhittasuttaṃ"],
+        ["sekhabalasaṅkhittasuttaṃz"],
         ["yo brāhmaṇo bāhitapāpadhammo x nihuhuṅko nikkasāvo yatatto x vedantagū vusitabrahmacariyo"],
         ["kittāvatā saccānaṃ saccapaññatti: yāvatā cattāri saccāni, dukkhasaccaṃ samudayasaccaṃ nirodhasaccaṃ maggasaccaṃ. ettāvatā saccānaṃ saccapaññatti."],
         #["සුප්පියස්ස පන පරිබ්බාජකස්ස අන්තෙවාසී බ්රහ්මදත්තො මාණවො අනෙකපරියායෙන බුද්ධස්ස වණ්ණං භාසති, ධම්මස්ස වණ්ණං භාසති, සඞ්ඝස්ස වණ්ණං භාසති."],

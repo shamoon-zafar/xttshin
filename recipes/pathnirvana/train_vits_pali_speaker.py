@@ -64,7 +64,7 @@ config = VitsConfig(
         ["namo tassa bhagavato arahato sammā sambuddhassa", "obhasa", None, None],
         ["manopubbaṅgamā dhammā manoseṭṭhā manomayā x manasā ce paduṭṭhena bhāsati vā karoti vā x tato naṃ dukkhamanveti, cakkaṃ'va vahato padaṃ.", "oshadir", None, None],
         ["mālāgandhavilepanadhāraṇamaṇḍanavibhūsanaṭṭhānā veramaṇīsikkhāpadaṃ samādiyāmi.", "mettananda", None, None],
-        ["sekhabalasaṅkhittasuttaṃ", "oshadir", None, None],
+        ["sekhabalasaṅkhittasuttaṃz", "oshadir", None, None],
         ["yo brāhmaṇo bāhitapāpadhammo x nihuhuṅko nikkasāvo yatatto x vedantagū vusitabrahmacariyo", "wdevananda", None, None],
         ["kittāvatā saccānaṃ saccapaññatti: yāvatā cattāri saccāni, dukkhasaccaṃ samudayasaccaṃ nirodhasaccaṃ maggasaccaṃ. ettāvatā saccānaṃ saccapaññatti.", "wdevananda", None, None],
         #["සුප්පියස්ස පන පරිබ්බාජකස්ස අන්තෙවාසී බ්රහ්මදත්තො මාණවො අනෙකපරියායෙන බුද්ධස්ස වණ්ණං භාසති, ධම්මස්ස වණ්ණං භාසති, සඞ්ඝස්ස වණ්ණං භාසති."],
