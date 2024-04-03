@@ -5,7 +5,7 @@ import tarfile
 import zipfile
 from pathlib import Path
 from shutil import copyfile, rmtree
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 
 import fsspec
 import requests
@@ -260,8 +260,7 @@ class ModelManager(object):
     def _set_model_item(self, model_name):
         # fetch model info from the dict
         if "fairseq" in model_name:
-            model_type = "tts_models"
-            lang = model_name.split("/")[1]
+            model_type, lang, dataset, model = model_name.split("/")
             model_item = {
                 "model_type": "tts_models",
                 "license": "CC BY-NC 4.0",
@@ -516,7 +515,7 @@ class ModelManager(object):
                     sub_conf[field_names[-1]] = new_path
             else:
                 # field name points to a top-level field
-                if not field_name in config:
+                if field_name not in config:
                     return
                 if isinstance(config[field_name], list):
                     config[field_name] = [new_path]

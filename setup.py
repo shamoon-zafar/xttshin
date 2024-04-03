@@ -23,12 +23,12 @@
 import os
 import subprocess
 import sys
-from packaging.version import Version
 
 import numpy
 import setuptools.command.build_py
 import setuptools.command.develop
 from Cython.Build import cythonize
+from packaging.version import Version
 from setuptools import Extension, find_packages, setup
 
 python_version = sys.version.split()[0]
@@ -66,7 +66,8 @@ with open(os.path.join(cwd, "requirements.dev.txt"), "r") as f:
     requirements_dev = f.readlines()
 with open(os.path.join(cwd, "requirements.ja.txt"), "r") as f:
     requirements_ja = f.readlines()
-requirements_all = requirements_dev + requirements_notebooks + requirements_ja
+requirements_server = ["flask>=2.0.1"]
+requirements_all = requirements_dev + requirements_notebooks + requirements_ja + requirements_server
 
 with open("README.md", "r", encoding="utf-8") as readme_file:
     README = readme_file.read()
@@ -78,12 +79,14 @@ exts = [
     )
 ]
 setup(
-    name="TTS",
+    name="coqui-tts",
     version=version,
-    url="https://github.com/coqui-ai/TTS",
+    url="https://github.com/eginhard/coqui-tts",
     author="Eren Gölge",
     author_email="egolge@coqui.ai",
-    description="Deep learning for Text to Speech by Coqui.",
+    maintainer="Enno Hermann",
+    maintainer_email="enno.hermann@gmail.com",
+    description="Deep learning for Text to Speech.",
     long_description=README,
     long_description_content_type="text/markdown",
     license="MPL-2.0",
@@ -100,10 +103,10 @@ setup(
         ]
     },
     project_urls={
-        "Documentation": "https://github.com/coqui-ai/TTS/wiki",
-        "Tracker": "https://github.com/coqui-ai/TTS/issues",
-        "Repository": "https://github.com/coqui-ai/TTS",
-        "Discussions": "https://github.com/coqui-ai/TTS/discussions",
+        "Documentation": "https://coqui-tts.readthedocs.io",
+        "Tracker": "https://github.com/eginhard/coqui-tts/issues",
+        "Repository": "https://github.com/eginhard/coqui-tts",
+        "Discussions": "https://github.com/eginhard/coqui-tts/discussions",
     },
     cmdclass={
         "build_py": build_py,
@@ -115,6 +118,7 @@ setup(
         "all": requirements_all,
         "dev": requirements_dev,
         "notebooks": requirements_notebooks,
+        "server": requirements_server,
         "ja": requirements_ja,
     },
     python_requires=">=3.9.0, <3.12",

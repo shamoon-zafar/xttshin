@@ -1,15 +1,13 @@
 import tempfile
 import warnings
 from pathlib import Path
-from typing import Union
 
-import numpy as np
 from torch import nn
 
+from TTS.config import load_config
 from TTS.utils.audio.numpy_transforms import save_wav
 from TTS.utils.manage import ModelManager
 from TTS.utils.synthesizer import Synthesizer
-from TTS.config import load_config
 
 
 class TTS(nn.Module):
@@ -99,7 +97,7 @@ class TTS(nn.Module):
             isinstance(self.model_name, str)
             and "xtts" in self.model_name
             or self.config
-            and ("xtts" in self.config.model or len(self.config.languages) > 1)
+            and ("xtts" in self.config.model or "languages" in self.config and len(self.config.languages) > 1)
         ):
             return True
         if hasattr(self.synthesizer.tts_model, "language_manager") and self.synthesizer.tts_model.language_manager:
@@ -122,8 +120,9 @@ class TTS(nn.Module):
     def get_models_file_path():
         return Path(__file__).parent / ".models.json"
 
-    def list_models(self):
-        return ModelManager(models_file=TTS.get_models_file_path(), progress_bar=False, verbose=False)
+    @staticmethod
+    def list_models():
+        return ModelManager(models_file=TTS.get_models_file_path(), progress_bar=False, verbose=False).list_models()
 
     def download_model_by_name(self, model_name: str):
         model_path, config_path, model_item = self.manager.download_model(model_name)
@@ -168,9 +167,7 @@ class TTS(nn.Module):
         self.synthesizer = None
         self.model_name = model_name
 
-        model_path, config_path, vocoder_path, vocoder_config_path, model_dir = self.download_model_by_name(
-            model_name
-        )
+        model_path, config_path, vocoder_path, vocoder_config_path, model_dir = self.download_model_by_name(model_name)
 
         # init synthesizer
         # None values are fetch from the model
@@ -231,7 +228,7 @@ class TTS(nn.Module):
             raise ValueError("Model is not multi-speaker but `speaker` is provided.")
         if not self.is_multi_lingual and language is not None:
             raise ValueError("Model is not multi-lingual but `language` is provided.")
-        if not emotion is None and not speed is None:
+        if emotion is not None and speed is not None:
             raise ValueError("Emotion and speed can only be used with Coqui Studio models. Which is discontinued.")
 
     def tts(

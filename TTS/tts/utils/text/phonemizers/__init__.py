@@ -10,7 +10,6 @@ try:
     from TTS.tts.utils.text.phonemizers.ja_jp_phonemizer import JA_JP_Phonemizer
 except ImportError:
     JA_JP_Phonemizer = None
-    pass
 
 PHONEMIZERS = {b.name(): b for b in (ESpeak, Gruut, KO_KR_Phonemizer, BN_Phonemizer)}
 
@@ -64,7 +63,7 @@ def get_phonemizer_by_name(name: str, **kwargs) -> BasePhonemizer:
         return ZH_CN_Phonemizer(**kwargs)
     if name == "ja_jp_phonemizer":
         if JA_JP_Phonemizer is None:
-            raise ValueError(" ❗ You need to install JA phonemizer dependencies. Try `pip install TTS[ja]`.")
+            raise ValueError(" ❗ You need to install JA phonemizer dependencies. Try `pip install coqui-tts[ja]`.")
         return JA_JP_Phonemizer(**kwargs)
     if name == "ko_kr_phonemizer":
         return KO_KR_Phonemizer(**kwargs)

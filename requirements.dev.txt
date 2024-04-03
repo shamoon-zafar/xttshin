@@ -1,5 +1,4 @@
-black
-coverage
-isort
+black==24.2.0
+coverage[toml]
 nose2
-pylint==2.10.2
+ruff==0.3.0

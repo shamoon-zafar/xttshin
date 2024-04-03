@@ -14,7 +14,7 @@ from TTS.model import BaseTrainerModel
 from TTS.tts.datasets.dataset import TTSDataset
 from TTS.tts.utils.data import get_length_balancer_weights
 from TTS.tts.utils.languages import LanguageManager, get_language_balancer_weights
-from TTS.tts.utils.speakers import SpeakerManager, get_speaker_balancer_weights, get_speaker_manager
+from TTS.tts.utils.speakers import SpeakerManager, get_speaker_balancer_weights
 from TTS.tts.utils.synthesis import synthesis
 from TTS.tts.utils.visual import plot_alignment, plot_spectrogram
 
@@ -369,9 +369,11 @@ class BaseTTS(BaseTrainerModel):
             d_vector = (random.sample(sorted(d_vector), 1),)
 
         aux_inputs = {
-            "speaker_id": None
-            if not self.config.use_speaker_embedding
-            else random.sample(sorted(self.speaker_manager.name_to_id.values()), 1),
+            "speaker_id": (
+                None
+                if not self.config.use_speaker_embedding
+                else random.sample(sorted(self.speaker_manager.name_to_id.values()), 1)
+            ),
             "d_vector": d_vector,
             "style_wav": None,  # TODO: handle GST style input
         }

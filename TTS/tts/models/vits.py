@@ -121,17 +121,19 @@ def wav_to_spec(y, n_fft, hop_length, win_length, center=False):
     )
     y = y.squeeze(1)
 
-    spec = torch.stft(
-        y,
-        n_fft,
-        hop_length=hop_length,
-        win_length=win_length,
-        window=hann_window[wnsize_dtype_device],
-        center=center,
-        pad_mode="reflect",
-        normalized=False,
-        onesided=True,
-        return_complex=False,
+    spec = torch.view_as_real(
+        torch.stft(
+            y,
+            n_fft,
+            hop_length=hop_length,
+            win_length=win_length,
+            window=hann_window[wnsize_dtype_device],
+            center=center,
+            pad_mode="reflect",
+            normalized=False,
+            onesided=True,
+            return_complex=True,
+        )
     )
 
     spec = torch.sqrt(spec.pow(2).sum(-1) + 1e-6)
@@ -189,17 +191,19 @@ def wav_to_mel(y, n_fft, num_mels, sample_rate, hop_length, win_length, fmin, fm
     )
     y = y.squeeze(1)
 
-    spec = torch.stft(
-        y,
-        n_fft,
-        hop_length=hop_length,
-        win_length=win_length,
-        window=hann_window[wnsize_dtype_device],
-        center=center,
-        pad_mode="reflect",
-        normalized=False,
-        onesided=True,
-        return_complex=False,
+    spec = torch.view_as_real(
+        torch.stft(
+            y,
+            n_fft,
+            hop_length=hop_length,
+            win_length=win_length,
+            window=hann_window[wnsize_dtype_device],
+            center=center,
+            pad_mode="reflect",
+            normalized=False,
+            onesided=True,
+            return_complex=True,
+        )
     )
 
     spec = torch.sqrt(spec.pow(2).sum(-1) + 1e-6)
@@ -1233,7 +1237,7 @@ class Vits(BaseTTS):
         Args:
             batch (Dict): Input tensors.
             criterion (nn.Module): Loss layer designed for the model.
-            optimizer_idx (int): Index of optimizer to use. 0 for the generator and 1 for the discriminator networks.
+            optimizer_idx (int): Index of optimizer to use. 0 for the discriminator and 1 for the generator networks.
 
         Returns:
             Tuple[Dict, Dict]: Model ouputs and computed losses.
@@ -1651,13 +1655,16 @@ class Vits(BaseTTS):
 
     def get_optimizer(self) -> List:
         """Initiate and return the GAN optimizers based on the config parameters.
-        It returnes 2 optimizers in a list. First one is for the generator and the second one is for the discriminator.
+
+        It returns 2 optimizers in a list. First one is for the discriminator
+        and the second one is for the generator.
+
         Returns:
             List: optimizers.
         """
-        # select generator parameters
         optimizer0 = get_optimizer(self.config.optimizer, self.config.optimizer_params, self.config.lr_disc, self.disc)
 
+        # select generator parameters
         gen_parameters = chain(params for k, params in self.named_parameters() if not k.startswith("disc."))
         optimizer1 = get_optimizer(
             self.config.optimizer, self.config.optimizer_params, self.config.lr_gen, parameters=gen_parameters
@@ -1880,16 +1887,18 @@ class Vits(BaseTTS):
         self.forward = _forward
         if training:
             self.train()
-        if not disc is None:
+        if disc is not None:
             self.disc = disc
 
     def load_onnx(self, model_path: str, cuda=False):
         import onnxruntime as ort
 
         providers = [
-            "CPUExecutionProvider"
-            if cuda is False
-            else ("CUDAExecutionProvider", {"cudnn_conv_algo_search": "DEFAULT"})
+            (
+                "CPUExecutionProvider"
+                if cuda is False
+                else ("CUDAExecutionProvider", {"cudnn_conv_algo_search": "DEFAULT"})
+            )
         ]
         sess_options = ort.SessionOptions()
         self.onnx_sess = ort.InferenceSession(
@@ -1914,9 +1923,9 @@ class Vits(BaseTTS):
             dtype=np.float32,
         )
         input_params = {"input": x, "input_lengths": x_lengths, "scales": scales}
-        if not speaker_id is None:
+        if speaker_id is not None:
             input_params["sid"] = torch.tensor([speaker_id]).cpu().numpy()
-        if not language_id is None:
+        if language_id is not None:
             input_params["langid"] = torch.tensor([language_id]).cpu().numpy()
 
         audio = self.onnx_sess.run(
@@ -1948,8 +1957,7 @@ class VitsCharacters(BaseCharacters):
     def _create_vocab(self):
         self._vocab = [self._pad] + list(self._punctuations) + list(self._characters) + [self._blank]
         self._char_to_id = {char: idx for idx, char in enumerate(self.vocab)}
-        # pylint: disable=unnecessary-comprehension
-        self._id_to_char = {idx: char for idx, char in enumerate(self.vocab)}
+        self._id_to_char = dict(enumerate(self.vocab))
 
     @staticmethod
     def init_from_config(config: Coqpit):
@@ -1996,4 +2004,4 @@ class FairseqVocab(BaseVocabulary):
         self.blank = self._vocab[0]
         self.pad = " "
         self._char_to_id = {s: i for i, s in enumerate(self._vocab)}  # pylint: disable=unnecessary-comprehension
-        self._id_to_char = {i: s for i, s in enumerate(self._vocab)}  # pylint: disable=unnecessary-comprehension
+        self._id_to_char = dict(enumerate(self._vocab))

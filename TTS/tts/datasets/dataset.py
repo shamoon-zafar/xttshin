@@ -6,6 +6,7 @@ from typing import Dict, List, Union
 
 import numpy as np
 import torch
+import torchaudio
 import tqdm
 from torch.utils.data import Dataset
 
@@ -40,6 +41,17 @@ def string2filename(string):
     # generate a safe and reversible filename based on a string
     filename = base64.urlsafe_b64encode(string.encode("utf-8")).decode("utf-8", "ignore")
     return filename
+
+
+def get_audio_size(audiopath) -> int:
+    """Return the number of samples in the audio file."""
+    extension = audiopath.rpartition(".")[-1].lower()
+    if extension not in {"mp3", "wav", "flac"}:
+        raise RuntimeError(
+            f"The audio format {extension} is not supported, please convert the audio files to mp3, flac, or wav format!"
+        )
+
+    return torchaudio.info(audiopath).num_frames
 
 
 class TTSDataset(Dataset):
@@ -176,7 +188,7 @@ class TTSDataset(Dataset):
         lens = []
         for item in self.samples:
             _, wav_file, *_ = _parse_sample(item)
-            audio_len = os.path.getsize(wav_file) / 16 * 8  # assuming 16bit audio
+            audio_len = get_audio_size(wav_file)
             lens.append(audio_len)
         return lens
 
@@ -295,7 +307,7 @@ class TTSDataset(Dataset):
     def _compute_lengths(samples):
         new_samples = []
         for item in samples:
-            audio_length = os.path.getsize(item["audio_file"]) / 16 * 8  # assuming 16bit audio
+            audio_length = get_audio_size(item["audio_file"])
             text_lenght = len(item["text"])
             item["audio_length"] = audio_length
             item["text_length"] = text_lenght
@@ -445,9 +457,11 @@ class TTSDataset(Dataset):
 
             # lengths adjusted by the reduction factor
             mel_lengths_adjusted = [
-                m.shape[1] + (self.outputs_per_step - (m.shape[1] % self.outputs_per_step))
-                if m.shape[1] % self.outputs_per_step
-                else m.shape[1]
+                (
+                    m.shape[1] + (self.outputs_per_step - (m.shape[1] % self.outputs_per_step))
+                    if m.shape[1] % self.outputs_per_step
+                    else m.shape[1]
+                )
                 for m in mel
             ]
 
