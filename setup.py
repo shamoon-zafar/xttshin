@@ -20,9 +20,10 @@
 #                           .,*++++::::::++++*,.
 #                                  ``````
 
-import os
+import itertools
 import subprocess
 import sys
+from pathlib import Path
 
 import numpy
 import setuptools.command.build_py
@@ -33,8 +34,8 @@ from setuptools import Extension, find_packages, setup
 if sys.version_info < (3, 9) or sys.version_info >= (3, 13):
     raise RuntimeError("Trainer requires python >= 3.6 and <3.13 " "but your Python version is {}".format(sys.version))
 
-cwd = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(cwd, "TTS", "VERSION")) as fin:
+cwd = Path(__file__).resolve().parent
+with open(cwd / "TTS" / "VERSION") as fin:
     version = fin.read().strip()
 
 
@@ -56,15 +57,13 @@ def pip_install(package_name):
     subprocess.call([sys.executable, "-m", "pip", "install", package_name])
 
 
-requirements = open(os.path.join(cwd, "requirements.txt"), "r").readlines()
-with open(os.path.join(cwd, "requirements.notebooks.txt"), "r") as f:
-    requirements_notebooks = f.readlines()
-with open(os.path.join(cwd, "requirements.dev.txt"), "r") as f:
-    requirements_dev = f.readlines()
-with open(os.path.join(cwd, "requirements.ja.txt"), "r") as f:
-    requirements_ja = f.readlines()
-requirements_server = ["flask>=2.0.1"]
-requirements_all = requirements_dev + requirements_notebooks + requirements_ja + requirements_server
+rdir = cwd / "requirements"
+requirements = open(rdir / "requirements.txt").readlines()
+extra_requirements = {}
+for extra in ("dev", "notebooks", "server", "ja"):
+    with open(rdir / f"requirements.{extra}.txt") as f:
+        extra_requirements[extra] = f.readlines()
+extra_requirements["all"] = itertools.chain(extra_requirements.values())
 
 with open("README.md", "r", encoding="utf-8") as readme_file:
     README = readme_file.read()
@@ -111,13 +110,7 @@ setup(
         # 'build_ext': build_ext
     },
     install_requires=requirements,
-    extras_require={
-        "all": requirements_all,
-        "dev": requirements_dev,
-        "notebooks": requirements_notebooks,
-        "server": requirements_server,
-        "ja": requirements_ja,
-    },
+    extras_require=extra_requirements,
     python_requires=">=3.9.0, <3.13",
     entry_points={"console_scripts": ["tts=TTS.bin.synthesize:main", "tts-server = TTS.server.server:main"]},
     classifiers=[

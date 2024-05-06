@@ -1,8 +1,8 @@
 include README.md
 include LICENSE.txt
-include requirements.*.txt
+include requirements/requirements.*.txt
 include *.cff
-include requirements.txt
+include requirements/requirements.txt
 include TTS/VERSION
 recursive-include TTS *.json
 recursive-include TTS *.html

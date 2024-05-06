@@ -22,10 +22,11 @@ COPY \
     Makefile \
     pyproject.toml \
     setup.py \
-    requirements.dev.txt \
-    requirements.ja.txt \
-    requirements.notebooks.txt \
-    requirements.txt \
+    requirements/requirements.dev.txt \
+    requirements/requirements.ja.txt \
+    requirements/requirements.notebooks.txt \
+    requirements/requirements.server.txt \
+    requirements/requirements.txt \
     /root/
 
 # Install Project Dependencies
@@ -34,11 +35,11 @@ RUN pip install \
     -r requirements.txt \
     -r requirements.dev.txt \
     -r requirements.ja.txt \
-    -r requirements.notebooks.txt
+    -r requirements.notebooks.txt \
+    -r requirements.server.txt
 
 # Copy TTS repository contents:
 COPY . /root
 
 # Installing the TTS package itself:
 RUN make install
-

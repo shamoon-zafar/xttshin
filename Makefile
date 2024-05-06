@@ -60,7 +60,7 @@ system-deps:	## install linux system deps
 	sudo apt-get install -y libsndfile1-dev
 
 dev-deps:  ## install development deps
-	pip install -r requirements.dev.txt
+	pip install -r requirements/requirements.dev.txt
 
 doc-deps:  ## install docs dependencies
 	pip install -r docs/requirements.txt
@@ -68,11 +68,8 @@ doc-deps:  ## install docs dependencies
 build-docs: ## build the docs
 	cd docs && make clean && make build
 
-hub-deps:  ## install deps for torch hub use
-	pip install -r requirements.hub.txt
-
 deps:	## install 🐸 requirements.
-	pip install -r requirements.txt
+	pip install -r requirements/requirements.txt
 
 install:	## install 🐸 TTS for development.
 	pip install -e .[all]

@@ -3,7 +3,7 @@ set -x
 
 cd $( dirname -- "$0"; )
 
-cp ../../requirements*.txt docker-prepare/
+cp ../../requirements/requirements*.txt docker-prepare/
 
 docker build -t tts-learn -f docker-prepare/Dockerfile docker-prepare/
 

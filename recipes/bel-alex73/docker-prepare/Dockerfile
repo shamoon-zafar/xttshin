@@ -5,7 +5,7 @@ RUN apt -y upgrade
 RUN apt -y install --no-install-recommends pip ffmpeg openjdk-19-jre-headless
 
 RUN mkdir /a/
-ADD requirements*.txt /a/
+ADD requirements/requirements*.txt /a/
 WORKDIR /a/
 RUN pip install -r requirements.txt -r requirements.dev.txt -r requirements.notebooks.txt
 RUN pip install seaborn pydub notebook
