@@ -707,8 +707,8 @@ class Xtts(BaseTTS):
                         last_tokens = []
                         yield wav_chunk
 
-                if not text_streaming:
-                    return
+            if not text_streaming:
+                return
 
     def inference_stream_text(
         self,
