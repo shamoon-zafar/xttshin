@@ -639,7 +639,7 @@ class Xtts(BaseTTS):
         length_scale = 1.0 / max(speed, 0.05)
         gpt_cond_latent = gpt_cond_latent.to(self.device)
         speaker_embedding = speaker_embedding.to(self.device)
-        text_streaming = (text is None)
+        text_streaming = text is None
 
         while True:
             if text_streaming:
@@ -729,8 +729,9 @@ class Xtts(BaseTTS):
         **hf_generate_kwargs,
     ):
         if self._stream_generator is not None:
-            raise Exception('Inference text-streaming already in progress. '
-                            'Did you forget to call inference_finalize_text?')
+            raise Exception(
+                "Inference text-streaming already in progress. Did you forget to call inference_finalize_text?"
+            )
 
         # Arguments `text` and `enable_text_splitting` given through holder
         self._stream_text_holder = [None, None]
@@ -757,15 +758,13 @@ class Xtts(BaseTTS):
 
     def inference_add_text(self, text: str, enable_text_splitting=False):
         if self._stream_generator is None:
-            raise Exception('Inference text-streaming not started. '
-                            'Please call inference_stream_text first')
+            raise Exception("Inference text-streaming not started. Please call inference_stream_text first")
         self._stream_text_holder[0] = text
         self._stream_text_holder[1] = enable_text_splitting
 
     def inference_finalize_text(self):
         if self._stream_generator is None:
-            raise Exception('Inference text-streaming was not started '
-                            '(start with inference_stream_text)')
+            raise Exception("Inference text-streaming was not started (start with inference_stream_text)")
         # Finalize and reset the generator
         self._stream_text_holder.clear()
         try:
