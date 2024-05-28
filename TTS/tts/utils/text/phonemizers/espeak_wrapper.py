@@ -11,7 +11,7 @@ from TTS.tts.utils.text.phonemizers.base import BasePhonemizer
 from TTS.tts.utils.text.punctuation import Punctuation
 
 logger = logging.getLogger(__name__)
-
+import sys
 
 def _is_tool(name) -> bool:
     from shutil import which
@@ -51,40 +51,50 @@ else:
 
 
 def _espeak_exe(espeak_lib: str, args: list, *, sync: bool = False) -> list[bytes]:
-    """Run espeak with the given arguments."""
     cmd = [
         espeak_lib,
-        "-q",
+        "-q",  # Silence the Suppress output
         "-b",
         "1",  # UTF8 text encoding
     ]
     cmd.extend(args)
-    logger.debug("espeakng: executing %s", repr(cmd))
+    #logger.debug("espeakng: executing %s", repr(cmd))          # Used for Debugging
+    #print(f"Executing command: {cmd}")                         # Used for Debugging
 
     with subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stderr=subprocess.PIPE
     ) as p:
-        res = iter(p.stdout.readline, b"")
-        err = iter(p.stderr.readline, b"")
-        for line in err:
-            logger.warning("espeakng: %s", line.decode("utf-8").strip())
-        if not sync:
-            p.stdout.close()
-            if p.stderr:
-                p.stderr.close()
-            if p.stdin:
-                p.stdin.close()
-            return res
-        res2 = list(res)
-        p.stdout.close()
-        if p.stderr:
-            p.stderr.close()
-        if p.stdin:
-            p.stdin.close()
-        p.wait()
-    return res2
+        try:
+            res = []
+            err = []
+            while True:
+                output = p.stdout.readline()
+                if output == b'' and p.poll() is not None:
+                    break
+                if output:
+                    res.append(output)
+                    #print(output.decode('utf-8', errors='replace').strip())             # Used for Debugging
+
+            while True:
+                error = p.stderr.readline()
+                if error == b'' and p.poll() is not None:
+                    break
+                if error:
+                    err.append(error)
+                    print(f"Error line: {error.decode('utf-8', errors='replace').strip()}", file=sys.stderr)
+
+            p.wait(timeout=30)  # Increase timeout to 30 seconds
+        except subprocess.TimeoutExpired:
+            p.kill()
+            res = []
+            print("Subprocess timed out and was killed.")
+        except Exception as e:
+            print(f"Exception occurred: {e}")
+            res = []
+    return res
+
 
 
 class ESpeak(BasePhonemizer):
