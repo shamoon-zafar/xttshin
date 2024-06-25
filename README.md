@@ -121,6 +121,7 @@ repository are also still a useful source of information.
 
 ### Voice Conversion
 - FreeVC: [paper](https://arxiv.org/abs/2210.15418)
+- OpenVoice: [technical report](https://arxiv.org/abs/2312.01479)
 
 You can also help us implement more models.
 

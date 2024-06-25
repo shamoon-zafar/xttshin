@@ -155,8 +155,10 @@ class TTS(nn.Module):
             gpu (bool, optional): Enable/disable GPU. Some models might be too slow on CPU. Defaults to False.
         """
         self.model_name = model_name
-        model_path, config_path, _, _, _ = self.download_model_by_name(model_name)
-        self.voice_converter = Synthesizer(vc_checkpoint=model_path, vc_config=config_path, use_cuda=gpu)
+        model_path, config_path, _, _, model_dir = self.download_model_by_name(model_name)
+        self.voice_converter = Synthesizer(
+            vc_checkpoint=model_path, vc_config=config_path, model_dir=model_dir, use_cuda=gpu
+        )
 
     def load_tts_model_by_name(self, model_name: str, gpu: bool = False):
         """Load one of 🐸TTS models by name.

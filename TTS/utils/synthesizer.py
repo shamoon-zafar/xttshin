@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+from pathlib import Path
 from typing import List
 
 import numpy as np
@@ -15,7 +16,9 @@ from TTS.tts.models.vits import Vits
 from TTS.tts.utils.synthesis import synthesis, transfer_voice, trim_silence
 from TTS.utils.audio import AudioProcessor
 from TTS.utils.audio.numpy_transforms import save_wav
+from TTS.vc.configs.openvoice_config import OpenVoiceConfig
 from TTS.vc.models import setup_model as setup_vc_model
+from TTS.vc.models.openvoice import OpenVoice
 from TTS.vocoder.models import setup_model as setup_vocoder_model
 from TTS.vocoder.utils.generic_utils import interpolate_vocoder_input
 
@@ -97,7 +100,7 @@ class Synthesizer(nn.Module):
             self._load_vocoder(vocoder_checkpoint, vocoder_config, use_cuda)
             self.output_sample_rate = self.vocoder_config.audio["sample_rate"]
 
-        if vc_checkpoint:
+        if vc_checkpoint and model_dir is None:
             self._load_vc(vc_checkpoint, vc_config, use_cuda)
             self.output_sample_rate = self.vc_config.audio["output_sample_rate"]
 
@@ -105,6 +108,9 @@ class Synthesizer(nn.Module):
             if "fairseq" in model_dir:
                 self._load_fairseq_from_dir(model_dir, use_cuda)
                 self.output_sample_rate = self.tts_config.audio["sample_rate"]
+            elif "openvoice" in model_dir:
+                self._load_openvoice_from_dir(Path(model_dir), use_cuda)
+                self.output_sample_rate = self.vc_config.audio["output_sample_rate"]
             else:
                 self._load_tts_from_dir(model_dir, use_cuda)
                 self.output_sample_rate = self.tts_config.audio["output_sample_rate"]
@@ -152,6 +158,19 @@ class Synthesizer(nn.Module):
         self.tts_config = self.tts_model.config
         if use_cuda:
             self.tts_model.cuda()
+
+    def _load_openvoice_from_dir(self, checkpoint: Path, use_cuda: bool) -> None:
+        """Load the OpenVoice model from a directory.
+
+        We assume the model knows how to load itself from the directory and
+        there is a config.json file in the directory.
+        """
+        self.vc_config = OpenVoiceConfig()
+        self.vc_model = OpenVoice.init_from_config(self.vc_config)
+        self.vc_model.load_checkpoint(self.vc_config, checkpoint, eval=True)
+        self.vc_config = self.vc_model.config
+        if use_cuda:
+            self.vc_model.cuda()
 
     def _load_tts_from_dir(self, model_dir: str, use_cuda: bool) -> None:
         """Load the TTS model from a directory.
