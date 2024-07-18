@@ -1,12 +1,10 @@
+import logging
 import os
 import re
 import textwrap
 from functools import cached_property
 
-import pypinyin
 import torch
-from hangul_romanize import Transliter
-from hangul_romanize.rule import academic
 from num2words import num2words
 from spacy.lang.ar import Arabic
 from spacy.lang.en import English
@@ -18,8 +16,11 @@ from tokenizers import Tokenizer
 
 from TTS.tts.layers.xtts.zh_num2words import TextNorm as zh_num2words
 
+logger = logging.getLogger(__name__)
+
 
 def get_spacy_lang(lang):
+    """Return Spacy language used for sentence splitting."""
     if lang == "zh":
         return Chinese()
     elif lang == "ja":
@@ -31,7 +32,7 @@ def get_spacy_lang(lang):
     elif lang == "hi":
         return Hindi()
     else:
-        # For most languages, Enlish does the job
+        # For most languages, English does the job
         return English()
 
 
@@ -471,7 +472,7 @@ _ordinal_re = {
     "tr": re.compile(r"([0-9]+)(\.|inci|nci|uncu|üncü|\.)"),
     "hu": re.compile(r"([0-9]+)(\.|adik|edik|odik|edik|ödik|ödike|ik)"),
     "ko": re.compile(r"([0-9]+)(번째|번|차|째)"),
-        "hi": re.compile(r"([0-9]+)(st|nd|rd|th)") # To check
+    "hi": re.compile(r"([0-9]+)(st|nd|rd|th)") # To check
 }
 _number_re = re.compile(r"[0-9]+")
 _currency_re = {
@@ -496,9 +497,6 @@ def _remove_dots(m):
     text = m.group(0)
     if "." in text:
         text = text.replace(".", "")
-    # For Hindi
-    elif "।" in text:
-        text = text.replace("।", "")
     return text
 
 
@@ -596,6 +594,10 @@ def basic_cleaners(text):
 
 
 def chinese_transliterate(text):
+    try:
+        import pypinyin
+    except ImportError as e:
+        raise ImportError("Chinese requires: pypinyin") from e
     return "".join(
         [p[0] for p in pypinyin.pinyin(text, style=pypinyin.Style.TONE3, heteronym=False, neutral_tone_with_five=True)]
     )
@@ -608,6 +610,11 @@ def japanese_cleaners(text, katsu):
 
 
 def korean_transliterate(text):
+    try:
+        from hangul_romanize import Transliter
+        from hangul_romanize.rule import academic
+    except ImportError as e:
+        raise ImportError("Korean requires: hangul_romanize") from e
     r = Transliter(academic)
     return r.translit(text)
 
@@ -650,8 +657,10 @@ class VoiceBpeTokenizer:
         lang = lang.split("-")[0]  # remove the region
         limit = self.char_limits.get(lang, 250)
         if len(txt) > limit:
-            print(
-                f"[!] Warning: The text length exceeds the character limit of {limit} for language '{lang}', this might cause truncated audio."
+            logger.warning(
+                "The text length exceeds the character limit of %d for language '%s', this might cause truncated audio.",
+                limit,
+                lang,
             )
 
     def preprocess_text(self, txt, lang):
@@ -664,7 +673,7 @@ class VoiceBpeTokenizer:
         elif lang == "ja":
             txt = japanese_cleaners(txt, self.katsu)
         elif lang == "hi":
-            # @manmay will implement this
+            # Currently Hindi_Cleaner isn't implemented, use basic_cleaners instead
             txt = basic_cleaners(txt)
         else:
             raise NotImplementedError(f"Language '{lang}' is not supported.")
