@@ -146,7 +146,7 @@ pip install coqui-tts
 If you plan to code or train models, clone 🐸TTS and install it locally.
 
 ```bash
-git clone https://github.com/idiap/coqui-ai-TTS
+git clone https://github.com/akshatrocky/coqui-ai-TTS
 cd coqui-ai-TTS
 pip install -e .
 ```
