@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from TTS.tts.utils.text.cleaners import english_cleaners, multilingual_phoneme_cleaners, phoneme_cleaners
+from TTS.tts.utils.text.cleaners import english_cleaners, multilingual_phoneme_cleaners, phoneme_cleaners, normalize_nfc
 
 
 def test_time() -> None:
@@ -24,3 +24,25 @@ def test_expand_numbers() -> None:
 def test_multilingual_phoneme_cleaners() -> None:
     assert multilingual_phoneme_cleaners("(Hello)") == "Hello"
     assert multilingual_phoneme_cleaners("1:") == "1,"
+
+
+def test_normalize_nfc() -> None:
+    test_cases = [
+            ("Häagen-Dazs", "Häagen-Dazs"),
+            ("你好!", "你好!"),
+            ("𝔄𝔅ℭ⓵⓶⓷︷,︸,i⁹,i₉,㌀,¼", "𝔄𝔅ℭ⓵⓶⓷︷,︸,i⁹,i₉,㌀,¼"),
+            ("é", "é"),
+            ("e\u0301", "é"),
+            ("a\u0300", "à"),
+            ("a\u0327", "a̧"),
+            ("na\u0303", "nã"),
+            ("o\u0302u", "ôu"),
+            ("n\u0303", "ñ"),
+            (u"\u4E2D\u56FD", u"中国"),
+            (u"niño", u"niño"),
+            (u"a\u0308", u"ä"),
+            (u"\u3053\u3093\u306b\u3061\u306f", u"こんにちは"),
+            (u"\u03B1\u03B2", u"αβ")
+    ]
+    for arg, expect in test_cases:
+        assert normalize_nfc(arg) == expect

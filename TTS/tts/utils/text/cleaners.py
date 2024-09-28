@@ -6,6 +6,7 @@ import re
 from typing import Optional
 
 from anyascii import anyascii
+from unicodedata import normalize
 
 from TTS.tts.utils.text.chinese_mandarin.numbers import replace_numbers_to_characters_in_text
 
@@ -185,4 +186,10 @@ def multilingual_cleaners(text: str) -> str:
 def no_cleaners(text: str) -> str:
     # remove newline characters
     text = text.replace("\n", "")
+    return text
+
+
+def normalize_nfc(text: str) -> str:
+    """Canonical decomposition followed by canonical composition"""
+    text = normalize("NFC", text)
     return text
