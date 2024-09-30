@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from TTS.tts.utils.text.cleaners import english_cleaners, multilingual_phoneme_cleaners, phoneme_cleaners, normalize_nfc
+from TTS.tts.utils.text.cleaners import english_cleaners, multilingual_phoneme_cleaners, normalize_nfc, phoneme_cleaners
 
 
 def test_time() -> None:

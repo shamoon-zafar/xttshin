@@ -1,12 +1,10 @@
 """Set of default text cleaners"""
 
-# TODO: pick the cleaner for languages dynamically
-
 import re
 from typing import Optional
+from unicodedata import normalize
 
 from anyascii import anyascii
-from unicodedata import normalize
 
 from TTS.tts.utils.text.chinese_mandarin.numbers import replace_numbers_to_characters_in_text
 
@@ -189,7 +187,7 @@ def no_cleaners(text: str) -> str:
     return text
 
 
-def normalize_nfc(text: str) -> str:
-    """Canonical decomposition followed by canonical composition"""
+def normalize_unicode(text: str) -> str:
+    """Normalize Unicode characters."""
     text = normalize("NFC", text)
     return text
