@@ -45,7 +45,7 @@ classifiers = [
 dependencies = [
     # Core
     "numpy>=1.25.2,<2",
-    "cython>=0.29.30",
+    "cython==3.0.11",         # Added exact version
     "scipy>=1.11.2",
     "torch>=2.4",
     "torchaudio",
@@ -73,7 +73,10 @@ dependencies = [
     "encodec>=0.1.1",
     # XTTS
     "num2words>=0.5.11",
-    "spacy[ja]>=3"
+    "spacy[ja]==3.7.5",         # Added exact version
+    "soxr==0.4.0",              # Added exact version
+    "scikit-learn==1.5.1",      # Added exact version
+    "contourpy==1.2.1",         # Added exact version
 ]
 
 [project.optional-dependencies]
