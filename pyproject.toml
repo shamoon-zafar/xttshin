@@ -2,7 +2,7 @@
 requires = [
     "setuptools",
     "setuptools-scm",
-    "cython~=0.29.30",
+    "cython",
     "numpy>=2.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -44,7 +44,7 @@ classifiers = [
 ]
 dependencies = [
     # Core
-    "numpy>=1.25.2",
+    "numpy>=1.25.2,<2",
     "cython>=0.29.30",
     "scipy>=1.11.2",
     "torch>=2.4",
