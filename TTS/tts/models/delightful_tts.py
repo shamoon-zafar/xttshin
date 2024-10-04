@@ -16,6 +16,7 @@ from torch.cuda.amp.autocast_mode import autocast
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import WeightedRandomSampler
+from trainer.io import load_fsspec
 from trainer.torch import DistributedSampler, DistributedSamplerWrapper
 from trainer.trainer_utils import get_optimizer, get_scheduler
 
@@ -32,7 +33,6 @@ from TTS.utils.audio.numpy_transforms import build_mel_basis, compute_f0
 from TTS.utils.audio.numpy_transforms import db_to_amp as db_to_amp_numpy
 from TTS.utils.audio.numpy_transforms import mel_to_wav as mel_to_wav_numpy
 from TTS.utils.audio.processor import AudioProcessor
-from TTS.utils.io import load_fsspec
 from TTS.vocoder.layers.losses import MultiScaleSTFTLoss
 from TTS.vocoder.models.hifigan_generator import HifiganGenerator
 from TTS.vocoder.utils.generic_utils import plot_results
@@ -86,12 +86,6 @@ def pad(input_ele: List[torch.Tensor], max_len: int) -> torch.Tensor:
         out_list.append(one_batch_padded)
     out_padded = torch.stack(out_list)
     return out_padded
-
-
-def init_weights(m: nn.Module, mean: float = 0.0, std: float = 0.01):
-    classname = m.__class__.__name__
-    if classname.find("Conv") != -1:
-        m.weight.data.normal_(mean, std)
 
 
 def stride_lens(lens: torch.Tensor, stride: int = 2) -> torch.Tensor:

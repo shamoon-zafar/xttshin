@@ -2,27 +2,11 @@
 import datetime
 import importlib
 import logging
-import os
 import re
-import subprocess
-import sys
 from pathlib import Path
 from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
-
-
-# TODO: This method is duplicated in Trainer but out of date there
-def get_git_branch():
-    try:
-        out = subprocess.check_output(["git", "branch"]).decode("utf8")
-        current = next(line for line in out.split("\n") if line.startswith("*"))
-        current.replace("* ", "")
-    except subprocess.CalledProcessError:
-        current = "inside_docker"
-    except (FileNotFoundError, StopIteration) as e:
-        current = "unknown"
-    return current
 
 
 def to_camel(text):
@@ -67,28 +51,6 @@ def get_import_path(obj: object) -> str:
     return ".".join([type(obj).__module__, type(obj).__name__])
 
 
-def get_user_data_dir(appname):
-    TTS_HOME = os.environ.get("TTS_HOME")
-    XDG_DATA_HOME = os.environ.get("XDG_DATA_HOME")
-    if TTS_HOME is not None:
-        ans = Path(TTS_HOME).expanduser().resolve(strict=False)
-    elif XDG_DATA_HOME is not None:
-        ans = Path(XDG_DATA_HOME).expanduser().resolve(strict=False)
-    elif sys.platform == "win32":
-        import winreg  # pylint: disable=import-outside-toplevel
-
-        key = winreg.OpenKey(
-            winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
-        )
-        dir_, _ = winreg.QueryValueEx(key, "Local AppData")
-        ans = Path(dir_).resolve(strict=False)
-    elif sys.platform == "darwin":
-        ans = Path("~/Library/Application Support/").expanduser()
-    else:
-        ans = Path.home().joinpath(".local/share")
-    return ans.joinpath(appname)
-
-
 def set_init_dict(model_dict, checkpoint_state, c):
     # Partial initialization: if there is a mismatch with new and old layer, it is skipped.
     for k, v in checkpoint_state.items():
@@ -126,7 +88,7 @@ def format_aux_input(def_args: Dict, kwargs: Dict) -> Dict:
 
 
 def get_timestamp() -> str:
-    return datetime.now().strftime("%y%m%d-%H%M%S")
+    return datetime.datetime.now().strftime("%y%m%d-%H%M%S")
 
 
 class ConsoleFormatter(logging.Formatter):

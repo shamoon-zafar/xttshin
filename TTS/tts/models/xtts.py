@@ -1,12 +1,14 @@
 import logging
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
 import librosa
 import torch
 import torch.nn.functional as F
 import torchaudio
 from coqpit import Coqpit
+from trainer.io import load_fsspec
 
 from TTS.tts.layers.xtts.gpt import GPT
 from TTS.tts.layers.xtts.hifigan_decoder import HifiDecoder
@@ -14,7 +16,6 @@ from TTS.tts.layers.xtts.stream_generator import init_stream_support
 from TTS.tts.layers.xtts.tokenizer import VoiceBpeTokenizer, split_sentence
 from TTS.tts.layers.xtts.xtts_manager import LanguageManager, SpeakerManager
 from TTS.tts.models.base_tts import BaseTTS
-from TTS.utils.io import load_fsspec
 
 logger = logging.getLogger(__name__)
 
@@ -200,7 +201,7 @@ class Xtts(BaseTTS):
         >>> from TTS.tts.configs.xtts_config import XttsConfig
         >>> from TTS.tts.models.xtts import Xtts
         >>> config = XttsConfig()
-        >>> model = Xtts.inif_from_config(config)
+        >>> model = Xtts.init_from_config(config)
         >>> model.load_checkpoint(config, checkpoint_dir="paths/to/models_dir/", eval=True)
     """
 
@@ -698,12 +699,12 @@ class Xtts(BaseTTS):
 
     def forward(self):
         raise NotImplementedError(
-            "XTTS has a dedicated trainer, please check the XTTS docs: https://coqui-tts.readthedocs.io/en/dev/models/xtts.html#training"
+            "XTTS has a dedicated trainer, please check the XTTS docs: https://coqui-tts.readthedocs.io/en/latest/models/xtts.html#training"
         )
 
     def eval_step(self):
         raise NotImplementedError(
-            "XTTS has a dedicated trainer, please check the XTTS docs: https://coqui-tts.readthedocs.io/en/dev/models/xtts.html#training"
+            "XTTS has a dedicated trainer, please check the XTTS docs: https://coqui-tts.readthedocs.io/en/latest/models/xtts.html#training"
         )
 
     @staticmethod
@@ -760,7 +761,11 @@ class Xtts(BaseTTS):
         """
 
         model_path = checkpoint_path or os.path.join(checkpoint_dir, "model.pth")
-        vocab_path = vocab_path or os.path.join(checkpoint_dir, "vocab.json")
+        if vocab_path is None:
+            if checkpoint_dir is not None and (Path(checkpoint_dir) / "vocab.json").is_file():
+                vocab_path = str(Path(checkpoint_dir) / "vocab.json")
+            else:
+                vocab_path = config.model_args.tokenizer_file
 
         if speaker_file_path is None and checkpoint_dir is not None:
             speaker_file_path = os.path.join(checkpoint_dir, "speakers_xtts.pth")
@@ -792,5 +797,5 @@ class Xtts(BaseTTS):
 
     def train_step(self):
         raise NotImplementedError(
-            "XTTS has a dedicated trainer, please check the XTTS docs: https://coqui-tts.readthedocs.io/en/dev/models/xtts.html#training"
+            "XTTS has a dedicated trainer, please check the XTTS docs: https://coqui-tts.readthedocs.io/en/latest/models/xtts.html#training"
         )

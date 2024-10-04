@@ -1,8 +1,9 @@
 [build-system]
 requires = [
     "setuptools",
-    "cython~=0.29.30",
-    "numpy>=1.24.3",
+    "setuptools-scm",
+    "cython>=3.0.0",
+    "numpy>=2.0.0",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -11,7 +12,7 @@ include = ["TTS*"]
 
 [project]
 name = "coqui-tts"
-version = "0.24.1"
+version = "0.24.2"
 description = "Deep learning for Text to Speech."
 readme = "README.md"
 requires-python = ">=3.9, <3.13"
@@ -43,8 +44,8 @@ classifiers = [
 ]
 dependencies = [
     # Core
-    "numpy>=1.24.3",
-    "cython>=0.29.30",
+    "numpy>=1.25.2",
+    "cython>=3.0.0",
     "scipy>=1.11.2",
     "torch>=2.1",
     "torchaudio",
@@ -58,74 +59,73 @@ dependencies = [
     "packaging>=23.1",
     # Inference
     "pysbd>=0.3.4",
-    # Notebooks
-    "umap-learn>=0.5.1",
     # Training
     "matplotlib>=3.7.0",
     # Coqui stack
-    "coqui-tts-trainer>=0.1",
+    "coqui-tts-trainer==0.1.4",
     "coqpit>=0.0.16",
     # Gruut + supported languages
-    "gruut[de,es,fr]==2.2.3",
+    "gruut[de,es,fr]>=2.4.0",
     # Tortoise
     "einops>=0.6.0",
-    "transformers>=4.33.0,<4.41.0",
+    "transformers>=4.42.0,<4.43.0",
     # Bark
     "encodec>=0.1.1",
     # XTTS
-    "num2words",
-    "spacy[ja]>=3"
+    "num2words>=0.5.11",
+    "spacy[ja]>=3,<3.8",
 ]
 
 [project.optional-dependencies]
 # Development dependencies
 dev = [
     "black==24.2.0",
-    "coverage[toml]",
-    "nose2",
-    "pre-commit",
-    "ruff==0.3.0",
-    "tomli; python_version < '3.11'",
+    "coverage[toml]>=7",
+    "nose2>=0.15",
+    "pre-commit>=3",
+    "ruff==0.4.9",
+    "tomli>=2; python_version < '3.11'",
 ]
 # Dependencies for building the documentation
 docs = [
-    "furo",
+    "furo>=2023.5.20",
     "myst-parser==2.0.0",
     "sphinx==7.2.5",
-    "sphinx_inline_tabs",
-    "sphinx_copybutton",
-    "linkify-it-py",
+    "sphinx_inline_tabs>=2023.4.21",
+    "sphinx_copybutton>=0.1",
+    "linkify-it-py>=2.0.0",
 ]
 # Only used in notebooks
 notebooks = [
     "bokeh==1.4.0",
     "pandas>=1.4,<2.0",
+    "umap-learn>=0.5.1",
 ]
 # For running the TTS server
-server = ["flask>=2.0.1"]
+server = ["flask>=3.0.0"]
 # Language-specific dependencies, mainly for G2P
 # Bangla
 bn = [
-    "bangla",
-    "bnnumerizer",
-    "bnunicodenormalizer",
+    "bangla>=0.0.2",
+    "bnnumerizer>=0.0.2",
+    "bnunicodenormalizer>=0.1.0",
 ]
 # Korean
 ko = [
-    "hangul_romanize",
-    "jamo",
+    "hangul_romanize>=0.1.0",
+    "jamo>=0.4.1",
     "g2pkk>=0.1.1",
 ]
 # Japanese
 ja = [
-    "mecab-python3",
+    "mecab-python3>=1.0.2",
     "unidic-lite==1.0.8",
-    "cutlet",
+    "cutlet>=0.2.0",
 ]
 # Chinese
 zh = [
-    "jieba",
-    "pypinyin",
+    "jieba>=0.42.1",
+    "pypinyin>=0.40.0",
 ]
 # All language-specific dependencies
 languages = [
@@ -169,6 +169,7 @@ lint.extend-select = [
     "PLR1711", # useless-return
     "PLW",
     "W291", # trailing-whitespace
+    "NPY201",  # NumPy 2.0 deprecation
 ]
 
 lint.ignore = [
@@ -204,3 +205,7 @@ target-version = ['py39']
 [tool.coverage.run]
 parallel = true
 source = ["TTS"]
+
+[tool.cibuildwheel]
+build = "cp*"
+skip = "*-win32 *i686 *musllinux*"

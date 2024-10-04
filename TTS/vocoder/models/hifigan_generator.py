@@ -7,16 +7,15 @@ from torch.nn import Conv1d, ConvTranspose1d
 from torch.nn import functional as F
 from torch.nn.utils.parametrizations import weight_norm
 from torch.nn.utils.parametrize import remove_parametrizations
-
-from TTS.utils.io import load_fsspec
+from trainer.io import load_fsspec
 
 logger = logging.getLogger(__name__)
 
 LRELU_SLOPE = 0.1
 
 
-def get_padding(k, d):
-    return int((k * d - d) / 2)
+def get_padding(kernel_size: int, dilation: int = 1) -> int:
+    return int((kernel_size * dilation - dilation) / 2)
 
 
 class ResBlock1(torch.nn.Module):
