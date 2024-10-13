@@ -34,7 +34,7 @@ class Pygoruut(BasePhonemizer):
         >>> from TTS.tts.utils.text.phonemizers.pygoruut_wrapper import Pygoruut
         >>> phonemizer = Pygoruut('en')
         >>> phonemizer.phonemize("Be a voice, not an! echo?", separator="|")
-        'b| æ| voʊɪs| noʊt| æ| ɛtʃoʊ'
+        'bə| ə| voʊikɪ| noʊt| ən| ɪtʃoʊ'
     """
 
     def __init__(
@@ -60,12 +60,12 @@ class Pygoruut(BasePhonemizer):
     def phonemize_goruut(self, text: str, separator: str = "|", tie=False, language=None) -> str:  # pylint: disable=unused-argument
         """Convert input text to phonemes.
 
-        Gruut phonemizes the given `str` by seperating each phonetic word with `separator`.
+        Goruut phonemizes the given `str` by seperating each phonetic word with `separator`.
 
         It doesn't affect 🐸TTS since it individually converts each character to token IDs and individual phones aren't needed.
 
         Examples::
-            "hello how are you today?" -> `hɛloʊ| hoʊ| ɚi| iaʊ| toʊdeɪ`
+            "hello how are you today?" -> `hˈɛlloʊ| hoʊw| əɹˈɛ| iˈaʊ| toʊdˈæi`
 
         Args:
             text (str):
