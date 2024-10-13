@@ -27,7 +27,7 @@ class Pygoruut(BasePhonemizer):
             Currently unsupported.
 
         keep_stress (bool):
-            Unsupported. Currently there is no stress.
+            Unsupported. Currently there is stress.
 
     Example:
 
