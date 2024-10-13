@@ -7,10 +7,6 @@ from pygoruut.pygoruut import Pygoruut, PygoruutLanguages
 from TTS.tts.utils.text.phonemizers.base import BasePhonemizer
 from TTS.tts.utils.text.punctuation import Punctuation
 
-# Table for str.translate to fix goruut/TTS phoneme mismatch
-PYGORUUT_TRANS_TABLE = str.maketrans("g", "ɡ")
-
-
 class Pygoruut(BasePhonemizer):
     """Pygoruut (goruut) wrapper for G2P
 
@@ -64,7 +60,7 @@ class Pygoruut(BasePhonemizer):
     def phonemize_goruut(self, text: str, separator: str = "|", tie=False, language=None) -> str:  # pylint: disable=unused-argument
         """Convert input text to phonemes.
 
-        Goruut phonemizes the given `str` by seperating each phonetic word with `separator`.
+        Gruut phonemizes the given `str` by seperating each phonetic word with `separator`.
 
         It doesn't affect 🐸TTS since it individually converts each character to token IDs and individual phones aren't needed.
 
@@ -82,8 +78,7 @@ class Pygoruut(BasePhonemizer):
         resp = self.pygoruut.phonemize(language=language, sentence=text)
         ph_words = []
         for word in resp.Words:
-            word_phonemes = word.Phonetic.translate(PYGORUUT_TRANS_TABLE)
-            ph_words.append(word_phonemes)
+            ph_words.append(word.Phonetic)
 
         ph = f"{separator} ".join(ph_words)
         return ph
