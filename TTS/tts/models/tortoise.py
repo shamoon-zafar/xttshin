@@ -23,6 +23,7 @@ from TTS.tts.layers.tortoise.tokenizer import VoiceBpeTokenizer
 from TTS.tts.layers.tortoise.vocoder import VocConf, VocType
 from TTS.tts.layers.tortoise.wav2vec_alignment import Wav2VecAlignment
 from TTS.tts.models.base_tts import BaseTTS
+from TTS.utils.generic_utils import is_pytorch_at_least_2_4
 
 logger = logging.getLogger(__name__)
 
@@ -170,7 +171,13 @@ def classify_audio_clip(clip, model_dir):
         kernel_size=5,
         distribute_zero_label=False,
     )
-    classifier.load_state_dict(torch.load(os.path.join(model_dir, "classifier.pth"), map_location=torch.device("cpu")))
+    classifier.load_state_dict(
+        torch.load(
+            os.path.join(model_dir, "classifier.pth"),
+            map_location=torch.device("cpu"),
+            weights_only=is_pytorch_at_least_2_4(),
+        )
+    )
     clip = clip.cpu().unsqueeze(0)
     results = F.softmax(classifier(clip), dim=-1)
     return results[0][0]
@@ -488,6 +495,7 @@ class Tortoise(BaseTTS):
                 torch.load(
                     os.path.join(self.models_dir, "rlg_auto.pth"),
                     map_location=torch.device("cpu"),
+                    weights_only=is_pytorch_at_least_2_4(),
                 )
             )
             self.rlg_diffusion = RandomLatentConverter(2048).eval()
@@ -495,6 +503,7 @@ class Tortoise(BaseTTS):
                 torch.load(
                     os.path.join(self.models_dir, "rlg_diffuser.pth"),
                     map_location=torch.device("cpu"),
+                    weights_only=is_pytorch_at_least_2_4(),
                 )
             )
         with torch.no_grad():
@@ -881,17 +890,17 @@ class Tortoise(BaseTTS):
 
         if os.path.exists(ar_path):
             # remove keys from the checkpoint that are not in the model
-            checkpoint = torch.load(ar_path, map_location=torch.device("cpu"))
+            checkpoint = torch.load(ar_path, map_location=torch.device("cpu"), weights_only=is_pytorch_at_least_2_4())
 
             # strict set False
             # due to removed `bias` and `masked_bias` changes in Transformers
             self.autoregressive.load_state_dict(checkpoint, strict=False)
 
         if os.path.exists(diff_path):
-            self.diffusion.load_state_dict(torch.load(diff_path), strict=strict)
+            self.diffusion.load_state_dict(torch.load(diff_path, weights_only=is_pytorch_at_least_2_4()), strict=strict)
 
         if os.path.exists(clvp_path):
-            self.clvp.load_state_dict(torch.load(clvp_path), strict=strict)
+            self.clvp.load_state_dict(torch.load(clvp_path, weights_only=is_pytorch_at_least_2_4()), strict=strict)
 
         if os.path.exists(vocoder_checkpoint_path):
             self.vocoder.load_state_dict(
@@ -899,6 +908,7 @@ class Tortoise(BaseTTS):
                     torch.load(
                         vocoder_checkpoint_path,
                         map_location=torch.device("cpu"),
+                        weights_only=is_pytorch_at_least_2_4(),
                     )
                 )
             )

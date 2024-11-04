@@ -12,7 +12,7 @@ include = ["TTS*"]
 
 [project]
 name = "coqui-tts"
-version = "0.24.2"
+version = "0.24.3"
 description = "Deep learning for Text to Speech."
 readme = "README.md"
 requires-python = ">=3.9, <3.13"
@@ -44,11 +44,11 @@ classifiers = [
 ]
 dependencies = [
     # Core
-    "numpy>=1.25.2",
+    "numpy>=1.25.2,<2.0",
     "cython>=3.0.0",
     "scipy>=1.11.2",
     "torch>=2.1",
-    "torchaudio",
+    "torchaudio>=2.1.0",
     "soundfile>=0.12.0",
     "librosa>=0.10.1",
     "inflect>=5.6.0",
@@ -68,7 +68,7 @@ dependencies = [
     "gruut[de,es,fr]>=2.4.0",
     # Tortoise
     "einops>=0.6.0",
-    "transformers>=4.42.0,<4.43.0",
+    "transformers>=4.43.0",
     # Bark
     "encodec>=0.1.1",
     # XTTS
@@ -77,15 +77,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Development dependencies
-dev = [
-    "black==24.2.0",
-    "coverage[toml]>=7",
-    "nose2>=0.15",
-    "pre-commit>=3",
-    "ruff==0.4.9",
-    "tomli>=2; python_version < '3.11'",
-]
 # Dependencies for building the documentation
 docs = [
     "furo>=2023.5.20",
@@ -115,6 +106,7 @@ ko = [
     "hangul_romanize>=0.1.0",
     "jamo>=0.4.1",
     "g2pkk>=0.1.1",
+    "pip>=22.2",
 ]
 # Japanese
 ja = [
@@ -136,6 +128,15 @@ all = [
     "coqui-tts[notebooks,server,bn,ja,ko,zh]",
 ]
 
+[dependency-groups]
+dev = [
+    "black==24.2.0",
+    "coverage[toml]>=7",
+    "nose2>=0.15",
+    "pre-commit>=3",
+    "ruff==0.7.0",
+]
+
 [project.urls]
 Homepage = "https://github.com/idiap/coqui-ai-TTS"
 Documentation = "https://coqui-tts.readthedocs.io"
@@ -147,14 +148,16 @@ Discussions = "https://github.com/idiap/coqui-ai-TTS/discussions"
 tts = "TTS.bin.synthesize:main"
 tts-server = "TTS.server.server:main"
 
+[tool.uv]
+constraint-dependencies = ["numba>0.58.0"]
+
 [tool.ruff]
-target-version = "py39"
 line-length = 120
+extend-exclude = ["*.ipynb"]
 lint.extend-select = [
     "B033", # duplicate-value
     "C416", # unnecessary-comprehension
     "D419", # empty-docstring
-    "E999", # syntax-error
     "F401", # unused-import
     "F704", # yield-outside-function
     "F706", # return-outside-function
