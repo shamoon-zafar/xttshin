@@ -604,6 +604,7 @@ class Vits2Args(Coqpit):
     freeze_PE: bool = False
     freeze_flow_decoder: bool = False
     freeze_waveform_decoder: bool = False
+    freeze_dur_disc: bool = False
     encoder_sample_rate: int = None
     interpolate_z: bool = True
     reinit_DP: bool = False
@@ -894,6 +895,10 @@ class Vits2(BaseTTS):
 
         if self.args.freeze_waveform_decoder:
             for param in self.waveform_decoder.parameters():
+                param.requires_grad = False
+                
+        if self.args.freeze_dur_disc:
+            for param in self.dur_disc.parameters():
                 param.requires_grad = False
 
     @staticmethod
@@ -1373,34 +1378,12 @@ class Vits2(BaseTTS):
                 )
             return self.model_outputs_cache, loss_dict
         
-        # if optimizer_idx == 2:
-
-        #     output_prob_for_real, output_probs_for_pred = self.dur_disc(
-        #         self.model_outputs_cache['hidden_encoded_text'],
-        #         self.model_outputs_cache['hidden_encoded_text_mask'],
-        #         self.model_outputs_cache['real_durations'].detach(), #logscaled
-        #         self.model_outputs_cache['predicted_durations'].detach() #logscaled
-        #     )
-            
-        #     outputs = {
-        #         "hidden_encoded_text" : self.model_outputs_cache['hidden_encoded_text'],
-        #         "hidden_encoded_text_mask" : self.model_outputs_cache['hidden_encoded_text_mask'],
-        #         "real_durations" : self.model_outputs_cache['real_durations'], #logscaled
-        #         "predicted_durations" : self.model_outputs_cache['predicted_durations'] #logscaled
-        #     }
-        #     with autocast(enabled=False):
-        #         loss_dict = criterion[optimizer_idx](
-        #             output_prob_for_real,
-        #             output_probs_for_pred,
-        #         )
-        #     return outputs, loss_dict
-        
         if optimizer_idx == 2:
 
             output_prob_for_real, output_probs_for_pred = self.dur_disc(
-                self.model_outputs_cache['hidden_encoded_text'],
-                self.model_outputs_cache['hidden_encoded_text_mask'],
-                self.model_outputs_cache['real_durations'],  # logscaled
+                self.model_outputs_cache['hidden_encoded_text'].detach(),
+                self.model_outputs_cache['hidden_encoded_text_mask'].detach(),
+                self.model_outputs_cache['real_durations'].detach(),  # logscaled
                 self.model_outputs_cache['predicted_durations'].detach()  # logscaled
             )
 
