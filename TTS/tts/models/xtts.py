@@ -259,6 +259,20 @@ class Xtts(BaseTTS):
     def device(self):
         return next(self.parameters()).device
 
+    def _auto_accept_license(self):
+        tos_path = os.path.join(self.output_prefix, "tos_agreed.txt")
+        os.makedirs(os.path.dirname(tos_path), exist_ok=True)
+        with open(tos_path, "w", encoding="utf-8") as f:
+            f.write("I have read, understood and agreed to the Terms and Conditions.")
+        logger.info("License automatically accepted for XTTS model.")
+
+    def _check_and_download_model(self, model_path):
+        if not os.path.exists(model_path):
+            logger.warning(f"Model file not found at {model_path}. Attempting to re-download.")
+            self._auto_accept_license()
+            self.download_model(self.config.model_name)
+
+
     @torch.inference_mode()
     def get_gpt_cond_latents(self, audio, sr, length: int = 30, chunk_length: int = 6):
         """Compute the conditioning latents for the GPT model from the given audio.
@@ -763,7 +777,8 @@ class Xtts(BaseTTS):
         """
 
         model_path = checkpoint_path or os.path.join(checkpoint_dir, "model.pth")
-        if vocab_path is None:
+        self._auto_accept_license()
+        self._check_and_download_model(model_path)
             if checkpoint_dir is not None and (Path(checkpoint_dir) / "vocab.json").is_file():
                 vocab_path = str(Path(checkpoint_dir) / "vocab.json")
             else:
@@ -781,6 +796,8 @@ class Xtts(BaseTTS):
             self.tokenizer = VoiceBpeTokenizer(vocab_file=vocab_path)
 
         self.init_models()
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Model file not found at {model_path} after attempting to download.")
 
         checkpoint = self.get_compatible_checkpoint_state_dict(model_path)
 
