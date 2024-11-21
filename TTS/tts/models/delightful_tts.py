@@ -19,7 +19,13 @@ from trainer.trainer_utils import get_optimizer, get_scheduler
 
 from TTS.tts.datasets.dataset import F0Dataset, TTSDataset, _parse_sample
 from TTS.tts.layers.delightful_tts.acoustic_model import AcousticModel
-from TTS.tts.layers.losses import ForwardSumLoss, VitsDiscriminatorLoss
+from TTS.tts.layers.losses import (
+    ForwardSumLoss,
+    VitsDiscriminatorLoss,
+    _binary_alignment_loss,
+    feature_loss,
+    generator_loss,
+)
 from TTS.tts.layers.vits.discriminator import VitsDiscriminator
 from TTS.tts.models.base_tts import BaseTTSE2E
 from TTS.tts.models.vits import load_audio
@@ -1491,36 +1497,6 @@ class DelightfulTTSLoss(nn.Module):
         self.gen_loss_alpha = config.gen_loss_alpha
         self.multi_scale_stft_loss_alpha = config.multi_scale_stft_loss_alpha
 
-    @staticmethod
-    def _binary_alignment_loss(alignment_hard, alignment_soft):
-        """Binary loss that forces soft alignments to match the hard alignments as
-        explained in `https://arxiv.org/pdf/2108.10447.pdf`.
-        """
-        log_sum = torch.log(torch.clamp(alignment_soft[alignment_hard == 1], min=1e-12)).sum()
-        return -log_sum / alignment_hard.sum()
-
-    @staticmethod
-    def feature_loss(feats_real, feats_generated):
-        loss = 0
-        for dr, dg in zip(feats_real, feats_generated):
-            for rl, gl in zip(dr, dg):
-                rl = rl.float().detach()
-                gl = gl.float()
-                loss += torch.mean(torch.abs(rl - gl))
-        return loss * 2
-
-    @staticmethod
-    def generator_loss(scores_fake):
-        loss = 0
-        gen_losses = []
-        for dg in scores_fake:
-            dg = dg.float()
-            l = torch.mean((1 - dg) ** 2)
-            gen_losses.append(l)
-            loss += l
-
-        return loss, gen_losses
-
     def forward(
         self,
         mel_output,
@@ -1618,7 +1594,7 @@ class DelightfulTTSLoss(nn.Module):
         )
 
         if self.binary_alignment_loss_alpha > 0 and aligner_hard is not None:
-            binary_alignment_loss = self._binary_alignment_loss(aligner_hard, aligner_soft)
+            binary_alignment_loss = _binary_alignment_loss(aligner_hard, aligner_soft)
             total_loss = total_loss + self.binary_alignment_loss_alpha * binary_alignment_loss * binary_loss_weight
             if binary_loss_weight:
                 loss_dict["loss_binary_alignment"] = (
@@ -1638,8 +1614,8 @@ class DelightfulTTSLoss(nn.Module):
 
         # vocoder losses
         if not skip_disc:
-            loss_feat = self.feature_loss(feats_real=feats_real, feats_generated=feats_fake) * self.feat_loss_alpha
-            loss_gen = self.generator_loss(scores_fake=scores_fake)[0] * self.gen_loss_alpha
+            loss_feat = feature_loss(feats_real=feats_real, feats_generated=feats_fake) * self.feat_loss_alpha
+            loss_gen = generator_loss(scores_fake=scores_fake)[0] * self.gen_loss_alpha
             loss_dict["vocoder_loss_feat"] = loss_feat
             loss_dict["vocoder_loss_gen"] = loss_gen
             loss_dict["loss"] = loss_dict["loss"] + loss_feat + loss_gen
