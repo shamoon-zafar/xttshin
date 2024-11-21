@@ -6,10 +6,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-
-class GroupNorm32(nn.GroupNorm):
-    def forward(self, x):
-        return super().forward(x.float()).type(x.dtype)
+from TTS.tts.layers.tortoise.arch_utils import normalization, zero_module
 
 
 def conv_nd(dims, *args, **kwargs):
@@ -20,24 +17,6 @@ def conv_nd(dims, *args, **kwargs):
     elif dims == 3:
         return nn.Conv3d(*args, **kwargs)
     raise ValueError(f"unsupported dimensions: {dims}")
-
-
-def normalization(channels):
-    groups = 32
-    if channels <= 16:
-        groups = 8
-    elif channels <= 64:
-        groups = 16
-    while channels % groups != 0:
-        groups = int(groups / 2)
-    assert groups > 2
-    return GroupNorm32(groups, channels)
-
-
-def zero_module(module):
-    for p in module.parameters():
-        p.detach().zero_()
-    return module
 
 
 class QKVAttention(nn.Module):
