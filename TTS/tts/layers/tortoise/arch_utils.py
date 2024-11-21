@@ -93,12 +93,10 @@ class AttentionBlock(nn.Module):
         channels,
         num_heads=1,
         num_head_channels=-1,
-        do_checkpoint=True,
         relative_pos_embeddings=False,
     ):
         super().__init__()
         self.channels = channels
-        self.do_checkpoint = do_checkpoint
         if num_head_channels == -1:
             self.num_heads = num_heads
         else:

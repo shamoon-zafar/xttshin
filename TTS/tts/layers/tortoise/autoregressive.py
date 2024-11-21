@@ -175,7 +175,6 @@ class ConditioningEncoder(nn.Module):
         embedding_dim,
         attn_blocks=6,
         num_attn_heads=4,
-        do_checkpointing=False,
         mean=False,
     ):
         super().__init__()
@@ -185,7 +184,6 @@ class ConditioningEncoder(nn.Module):
             attn.append(AttentionBlock(embedding_dim, num_attn_heads))
         self.attn = nn.Sequential(*attn)
         self.dim = embedding_dim
-        self.do_checkpointing = do_checkpointing
         self.mean = mean
 
     def forward(self, x):
