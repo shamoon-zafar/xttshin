@@ -8,11 +8,9 @@ from typing import Dict, List, Optional, Tuple, Union
 import numpy as np
 import torch
 import torch.distributed as dist
-import torchaudio
 from coqpit import Coqpit
 from librosa.filters import mel as librosa_mel_fn
 from torch import nn
-from torch.nn import functional as F
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import WeightedRandomSampler
 from trainer.io import load_fsspec
@@ -24,8 +22,10 @@ from TTS.tts.layers.delightful_tts.acoustic_model import AcousticModel
 from TTS.tts.layers.losses import ForwardSumLoss, VitsDiscriminatorLoss
 from TTS.tts.layers.vits.discriminator import VitsDiscriminator
 from TTS.tts.models.base_tts import BaseTTSE2E
+from TTS.tts.models.vits import load_audio
 from TTS.tts.utils.helpers import average_over_durations, compute_attn_prior, rand_segments, segment, sequence_mask
 from TTS.tts.utils.speakers import SpeakerManager
+from TTS.tts.utils.synthesis import embedding_to_torch, id_to_torch, numpy_to_torch
 from TTS.tts.utils.text.tokenizer import TTSTokenizer
 from TTS.tts.utils.visual import plot_alignment, plot_avg_pitch, plot_pitch, plot_spectrogram
 from TTS.utils.audio.numpy_transforms import build_mel_basis, compute_f0
@@ -40,101 +40,8 @@ from TTS.vocoder.utils.generic_utils import plot_results
 logger = logging.getLogger(__name__)
 
 
-def id_to_torch(aux_id, cuda=False):
-    if aux_id is not None:
-        aux_id = np.asarray(aux_id)
-        aux_id = torch.from_numpy(aux_id)
-    if cuda:
-        return aux_id.cuda()
-    return aux_id
-
-
-def embedding_to_torch(d_vector, cuda=False):
-    if d_vector is not None:
-        d_vector = np.asarray(d_vector)
-        d_vector = torch.from_numpy(d_vector).float()
-        d_vector = d_vector.squeeze().unsqueeze(0)
-    if cuda:
-        return d_vector.cuda()
-    return d_vector
-
-
-def numpy_to_torch(np_array, dtype, cuda=False):
-    if np_array is None:
-        return None
-    tensor = torch.as_tensor(np_array, dtype=dtype)
-    if cuda:
-        return tensor.cuda()
-    return tensor
-
-
-def get_mask_from_lengths(lengths: torch.Tensor) -> torch.Tensor:
-    batch_size = lengths.shape[0]
-    max_len = torch.max(lengths).item()
-    ids = torch.arange(0, max_len, device=lengths.device).unsqueeze(0).expand(batch_size, -1)
-    mask = ids >= lengths.unsqueeze(1).expand(-1, max_len)
-    return mask
-
-
-def pad(input_ele: List[torch.Tensor], max_len: int) -> torch.Tensor:
-    out_list = torch.jit.annotate(List[torch.Tensor], [])
-    for batch in input_ele:
-        if len(batch.shape) == 1:
-            one_batch_padded = F.pad(batch, (0, max_len - batch.size(0)), "constant", 0.0)
-        else:
-            one_batch_padded = F.pad(batch, (0, 0, 0, max_len - batch.size(0)), "constant", 0.0)
-        out_list.append(one_batch_padded)
-    out_padded = torch.stack(out_list)
-    return out_padded
-
-
-def stride_lens(lens: torch.Tensor, stride: int = 2) -> torch.Tensor:
-    return torch.ceil(lens / stride).int()
-
-
-def initialize_embeddings(shape: Tuple[int]) -> torch.Tensor:
-    assert len(shape) == 2, "Can only initialize 2-D embedding matrices ..."
-    return torch.randn(shape) * np.sqrt(2 / shape[1])
-
-
-# pylint: disable=redefined-outer-name
-def calc_same_padding(kernel_size: int) -> Tuple[int, int]:
-    pad = kernel_size // 2
-    return (pad, pad - (kernel_size + 1) % 2)
-
-
 hann_window = {}
 mel_basis = {}
-
-
-@torch.no_grad()
-def weights_reset(m: nn.Module):
-    # check if the current module has reset_parameters and if it is reset the weight
-    reset_parameters = getattr(m, "reset_parameters", None)
-    if callable(reset_parameters):
-        m.reset_parameters()
-
-
-def get_module_weights_sum(mdl: nn.Module):
-    dict_sums = {}
-    for name, w in mdl.named_parameters():
-        if "weight" in name:
-            value = w.data.sum().item()
-            dict_sums[name] = value
-    return dict_sums
-
-
-def load_audio(file_path: str):
-    """Load the audio file normalized in [-1, 1]
-
-    Return Shapes:
-        - x: :math:`[1, T]`
-    """
-    x, sr = torchaudio.load(
-        file_path,
-    )
-    assert (x > 1).sum() + (x < -1).sum() == 0
-    return x, sr
 
 
 def _wav_to_spec(y, n_fft, hop_length, win_length, center=False):
@@ -1179,7 +1086,7 @@ class DelightfulTTS(BaseTTSE2E):
         **kwargs,
     ):  # pylint: disable=unused-argument
         # TODO: add cloning support with ref_waveform
-        is_cuda = next(self.parameters()).is_cuda
+        device = next(self.parameters()).device
 
         # convert text to sequence of token IDs
         text_inputs = np.asarray(
@@ -1193,14 +1100,14 @@ class DelightfulTTS(BaseTTSE2E):
             if isinstance(speaker_id, str) and self.args.use_speaker_embedding:
                 # get the speaker id for the speaker embedding layer
                 _speaker_id = self.speaker_manager.name_to_id[speaker_id]
-                _speaker_id = id_to_torch(_speaker_id, cuda=is_cuda)
+                _speaker_id = id_to_torch(_speaker_id, device=device)
 
         if speaker_id is not None and self.args.use_d_vector_file:
             # get the average d_vector for the speaker
             d_vector = self.speaker_manager.get_mean_embedding(speaker_id, num_samples=None, randomize=False)
-        d_vector = embedding_to_torch(d_vector, cuda=is_cuda)
+        d_vector = embedding_to_torch(d_vector, device=device)
 
-        text_inputs = numpy_to_torch(text_inputs, torch.long, cuda=is_cuda)
+        text_inputs = numpy_to_torch(text_inputs, torch.long, device=device)
         text_inputs = text_inputs.unsqueeze(0)
 
         # synthesize voice
@@ -1223,7 +1130,7 @@ class DelightfulTTS(BaseTTSE2E):
         return return_dict
 
     def synthesize_with_gl(self, text: str, speaker_id, d_vector):
-        is_cuda = next(self.parameters()).is_cuda
+        device = next(self.parameters()).device
 
         # convert text to sequence of token IDs
         text_inputs = np.asarray(
@@ -1232,12 +1139,12 @@ class DelightfulTTS(BaseTTSE2E):
         )
         # pass tensors to backend
         if speaker_id is not None:
-            speaker_id = id_to_torch(speaker_id, cuda=is_cuda)
+            speaker_id = id_to_torch(speaker_id, device=device)
 
         if d_vector is not None:
-            d_vector = embedding_to_torch(d_vector, cuda=is_cuda)
+            d_vector = embedding_to_torch(d_vector, device=device)
 
-        text_inputs = numpy_to_torch(text_inputs, torch.long, cuda=is_cuda)
+        text_inputs = numpy_to_torch(text_inputs, torch.long, device=device)
         text_inputs = text_inputs.unsqueeze(0)
 
         # synthesize voice
