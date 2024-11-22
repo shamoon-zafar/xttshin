@@ -93,28 +93,3 @@ class AttentionBlock(nn.Module):
         h = self.proj_out(h)
         xp = self.x_proj(x)
         return (xp + h).reshape(b, xp.shape[1], *spatial)
-
-
-class ConditioningEncoder(nn.Module):
-    def __init__(
-        self,
-        spec_dim,
-        embedding_dim,
-        attn_blocks=6,
-        num_attn_heads=4,
-    ):
-        super().__init__()
-        attn = []
-        self.init = nn.Conv1d(spec_dim, embedding_dim, kernel_size=1)
-        for a in range(attn_blocks):
-            attn.append(AttentionBlock(embedding_dim, num_attn_heads))
-        self.attn = nn.Sequential(*attn)
-        self.dim = embedding_dim
-
-    def forward(self, x):
-        """
-        x: (b, 80, s)
-        """
-        h = self.init(x)
-        h = self.attn(h)
-        return h

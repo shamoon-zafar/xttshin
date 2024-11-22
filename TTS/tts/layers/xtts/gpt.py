@@ -8,12 +8,12 @@ import torch.nn.functional as F
 from transformers import GPT2Config
 
 from TTS.tts.layers.tortoise.autoregressive import (
+    ConditioningEncoder,
     LearnedPositionEmbeddings,
     _prepare_attention_mask_for_generation,
     build_hf_gpt_transformer,
 )
 from TTS.tts.layers.xtts.gpt_inference import GPT2InferenceModel
-from TTS.tts.layers.xtts.latent_encoder import ConditioningEncoder
 from TTS.tts.layers.xtts.perceiver_encoder import PerceiverResampler
 
 
@@ -235,19 +235,6 @@ class GPT(nn.Module):
         else:
             return first_logits
 
-    def get_conditioning(self, speech_conditioning_input):
-        speech_conditioning_input = (
-            speech_conditioning_input.unsqueeze(1)
-            if len(speech_conditioning_input.shape) == 3
-            else speech_conditioning_input
-        )
-        conds = []
-        for j in range(speech_conditioning_input.shape[1]):
-            conds.append(self.conditioning_encoder(speech_conditioning_input[:, j]))
-        conds = torch.stack(conds, dim=1)
-        conds = conds.mean(dim=1)
-        return conds
-
     def get_prompts(self, prompt_codes):
         """
         Create a prompt from the mel codes. This is used to condition the model on the mel codes.
@@ -286,6 +273,7 @@ class GPT(nn.Module):
         """
         cond_input: (b, 80, s) or (b, 1, 80, s)
         conds: (b, 1024, s)
+        output: (b, 1024, 32)
         """
         conds = None
         if not return_latent:

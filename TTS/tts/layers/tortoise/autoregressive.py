@@ -176,7 +176,6 @@ class ConditioningEncoder(nn.Module):
         embedding_dim,
         attn_blocks=6,
         num_attn_heads=4,
-        mean=False,
     ):
         super().__init__()
         attn = []
@@ -185,15 +184,14 @@ class ConditioningEncoder(nn.Module):
             attn.append(AttentionBlock(embedding_dim, num_attn_heads))
         self.attn = nn.Sequential(*attn)
         self.dim = embedding_dim
-        self.mean = mean
 
     def forward(self, x):
+        """
+        x: (b, 80, s)
+        """
         h = self.init(x)
         h = self.attn(h)
-        if self.mean:
-            return h.mean(dim=2)
-        else:
-            return h[:, :, 0]
+        return h
 
 
 class LearnedPositionEmbeddings(nn.Module):
@@ -473,7 +471,7 @@ class UnifiedVoice(nn.Module):
         )
         conds = []
         for j in range(speech_conditioning_input.shape[1]):
-            conds.append(self.conditioning_encoder(speech_conditioning_input[:, j]))
+            conds.append(self.conditioning_encoder(speech_conditioning_input[:, j])[:, :, 0])
         conds = torch.stack(conds, dim=1)
         conds = conds.mean(dim=1)
         return conds
