@@ -2,6 +2,8 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
+from TTS.tts.layers.tacotron.common_layers import calculate_post_conv_height
+
 
 class GST(nn.Module):
     """Global Style Token Module for factorizing prosody in speech.
@@ -44,7 +46,7 @@ class ReferenceEncoder(nn.Module):
         self.convs = nn.ModuleList(convs)
         self.bns = nn.ModuleList([nn.BatchNorm2d(num_features=filter_size) for filter_size in filters[1:]])
 
-        post_conv_height = self.calculate_post_conv_height(num_mel, 3, 2, 1, num_layers)
+        post_conv_height = calculate_post_conv_height(num_mel, 3, 2, 1, num_layers)
         self.recurrence = nn.GRU(
             input_size=filters[-1] * post_conv_height, hidden_size=embedding_dim // 2, batch_first=True
         )
@@ -70,13 +72,6 @@ class ReferenceEncoder(nn.Module):
         # out: 3D tensor [seq_len==1, batch_size, encoding_size=128]
 
         return out.squeeze(0)
-
-    @staticmethod
-    def calculate_post_conv_height(height, kernel_size, stride, pad, n_convs):
-        """Height of spec after n convolutions with fixed kernel/stride/pad."""
-        for _ in range(n_convs):
-            height = (height - kernel_size + 2 * pad) // stride + 1
-        return height
 
 
 class StyleTokenLayer(nn.Module):
