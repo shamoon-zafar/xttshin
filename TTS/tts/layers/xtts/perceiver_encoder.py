@@ -10,10 +10,7 @@ from einops.layers.torch import Rearrange
 from torch import einsum, nn
 
 from TTS.tts.layers.tortoise.transformer import GEGLU
-
-
-def exists(val):
-    return val is not None
+from TTS.utils.generic_utils import default, exists
 
 
 def once(fn):
@@ -151,12 +148,6 @@ class Attend(nn.Module):
 
 def Sequential(*mods):
     return nn.Sequential(*filter(exists, mods))
-
-
-def default(val, d):
-    if exists(val):
-        return val
-    return d() if callable(d) else d
 
 
 class RMSNorm(nn.Module):

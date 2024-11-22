@@ -4,12 +4,25 @@ import importlib
 import logging
 import re
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Callable, Dict, Optional, TypeVar, Union
 
 import torch
 from packaging.version import Version
+from typing_extensions import TypeIs
 
 logger = logging.getLogger(__name__)
+
+_T = TypeVar("_T")
+
+
+def exists(val: Union[_T, None]) -> TypeIs[_T]:
+    return val is not None
+
+
+def default(val: Union[_T, None], d: Union[_T, Callable[[], _T]]) -> _T:
+    if exists(val):
+        return val
+    return d() if callable(d) else d
 
 
 def to_camel(text):
