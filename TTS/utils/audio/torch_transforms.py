@@ -3,6 +3,16 @@ import torch
 from torch import nn
 
 
+def amp_to_db(x: torch.Tensor, *, spec_gain: float = 1.0, clip_val: float = 1e-5) -> torch.Tensor:
+    """Spectral normalization / dynamic range compression."""
+    return torch.log(torch.clamp(x, min=clip_val) * spec_gain)
+
+
+def db_to_amp(x: torch.Tensor, *, spec_gain: float = 1.0) -> torch.Tensor:
+    """Spectral denormalization / dynamic range decompression."""
+    return torch.exp(x) / spec_gain
+
+
 class TorchSTFT(nn.Module):  # pylint: disable=abstract-method
     """Some of the audio processing funtions using Torch for faster batch processing.
 
@@ -157,11 +167,3 @@ class TorchSTFT(nn.Module):  # pylint: disable=abstract-method
             norm=self.mel_norm,
         )
         self.mel_basis = torch.from_numpy(mel_basis).float()
-
-    @staticmethod
-    def _amp_to_db(x, spec_gain=1.0):
-        return torch.log(torch.clamp(x, min=1e-5) * spec_gain)
-
-    @staticmethod
-    def _db_to_amp(x, spec_gain=1.0):
-        return torch.exp(x) / spec_gain

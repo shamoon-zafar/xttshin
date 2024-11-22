@@ -35,6 +35,7 @@ from TTS.tts.utils.synthesis import synthesis
 from TTS.tts.utils.text.characters import BaseCharacters, BaseVocabulary, _characters, _pad, _phonemes, _punctuations
 from TTS.tts.utils.text.tokenizer import TTSTokenizer
 from TTS.tts.utils.visual import plot_alignment
+from TTS.utils.audio.torch_transforms import amp_to_db
 from TTS.utils.samplers import BucketBatchSampler
 from TTS.vocoder.models.hifigan_generator import HifiganGenerator
 from TTS.vocoder.utils.generic_utils import plot_results
@@ -76,24 +77,6 @@ def load_audio(file_path):
     x, sr = torchaudio.load(file_path)
     assert (x > 1).sum() + (x < -1).sum() == 0
     return x, sr
-
-
-def _amp_to_db(x, C=1, clip_val=1e-5):
-    return torch.log(torch.clamp(x, min=clip_val) * C)
-
-
-def _db_to_amp(x, C=1):
-    return torch.exp(x) / C
-
-
-def amp_to_db(magnitudes):
-    output = _amp_to_db(magnitudes)
-    return output
-
-
-def db_to_amp(magnitudes):
-    output = _db_to_amp(magnitudes)
-    return output
 
 
 def wav_to_spec(y, n_fft, hop_length, win_length, center=False):

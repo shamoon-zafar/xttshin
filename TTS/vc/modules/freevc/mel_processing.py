@@ -4,38 +4,11 @@ import torch
 import torch.utils.data
 from librosa.filters import mel as librosa_mel_fn
 
+from TTS.utils.audio.torch_transforms import amp_to_db
+
 logger = logging.getLogger(__name__)
 
 MAX_WAV_VALUE = 32768.0
-
-
-def dynamic_range_compression_torch(x, C=1, clip_val=1e-5):
-    """
-    PARAMS
-    ------
-    C: compression factor
-    """
-    return torch.log(torch.clamp(x, min=clip_val) * C)
-
-
-def dynamic_range_decompression_torch(x, C=1):
-    """
-    PARAMS
-    ------
-    C: compression factor used to compress
-    """
-    return torch.exp(x) / C
-
-
-def spectral_normalize_torch(magnitudes):
-    output = dynamic_range_compression_torch(magnitudes)
-    return output
-
-
-def spectral_de_normalize_torch(magnitudes):
-    output = dynamic_range_decompression_torch(magnitudes)
-    return output
-
 
 mel_basis = {}
 hann_window = {}
@@ -85,7 +58,7 @@ def spec_to_mel_torch(spec, n_fft, num_mels, sampling_rate, fmin, fmax):
         mel = librosa_mel_fn(sr=sampling_rate, n_fft=n_fft, n_mels=num_mels, fmin=fmin, fmax=fmax)
         mel_basis[fmax_dtype_device] = torch.from_numpy(mel).to(dtype=spec.dtype, device=spec.device)
     spec = torch.matmul(mel_basis[fmax_dtype_device], spec)
-    spec = spectral_normalize_torch(spec)
+    spec = amp_to_db(spec)
     return spec
 
 
@@ -128,6 +101,6 @@ def mel_spectrogram_torch(y, n_fft, num_mels, sampling_rate, hop_size, win_size,
     spec = torch.sqrt(spec.pow(2).sum(-1) + 1e-6)
 
     spec = torch.matmul(mel_basis[fmax_dtype_device], spec)
-    spec = spectral_normalize_torch(spec)
+    spec = amp_to_db(spec)
 
     return spec
