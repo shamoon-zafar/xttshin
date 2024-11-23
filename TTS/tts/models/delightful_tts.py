@@ -9,7 +9,6 @@ import numpy as np
 import torch
 import torch.distributed as dist
 from coqpit import Coqpit
-from librosa.filters import mel as librosa_mel_fn
 from torch import nn
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import WeightedRandomSampler
@@ -38,7 +37,7 @@ from TTS.utils.audio.numpy_transforms import build_mel_basis, compute_f0
 from TTS.utils.audio.numpy_transforms import db_to_amp as db_to_amp_numpy
 from TTS.utils.audio.numpy_transforms import mel_to_wav as mel_to_wav_numpy
 from TTS.utils.audio.processor import AudioProcessor
-from TTS.utils.audio.torch_transforms import amp_to_db
+from TTS.utils.audio.torch_transforms import wav_to_mel, wav_to_spec
 from TTS.vocoder.layers.losses import MultiScaleSTFTLoss
 from TTS.vocoder.models.hifigan_generator import HifiganGenerator
 from TTS.vocoder.utils.generic_utils import plot_results
@@ -50,143 +49,9 @@ hann_window = {}
 mel_basis = {}
 
 
-def _wav_to_spec(y, n_fft, hop_length, win_length, center=False):
-    y = y.squeeze(1)
-
-    if torch.min(y) < -1.0:
-        logger.info("min value is %.3f", torch.min(y))
-    if torch.max(y) > 1.0:
-        logger.info("max value is %.3f", torch.max(y))
-
-    global hann_window  # pylint: disable=global-statement
-    dtype_device = str(y.dtype) + "_" + str(y.device)
-    wnsize_dtype_device = str(win_length) + "_" + dtype_device
-    if wnsize_dtype_device not in hann_window:
-        hann_window[wnsize_dtype_device] = torch.hann_window(win_length).to(dtype=y.dtype, device=y.device)
-
-    y = torch.nn.functional.pad(
-        y.unsqueeze(1),
-        (int((n_fft - hop_length) / 2), int((n_fft - hop_length) / 2)),
-        mode="reflect",
-    )
-    y = y.squeeze(1)
-
-    spec = torch.view_as_real(
-        torch.stft(
-            y,
-            n_fft,
-            hop_length=hop_length,
-            win_length=win_length,
-            window=hann_window[wnsize_dtype_device],
-            center=center,
-            pad_mode="reflect",
-            normalized=False,
-            onesided=True,
-            return_complex=True,
-        )
-    )
-
-    return spec
-
-
-def wav_to_spec(y, n_fft, hop_length, win_length, center=False):
-    """
-    Args Shapes:
-        - y : :math:`[B, 1, T]`
-
-    Return Shapes:
-        - spec : :math:`[B,C,T]`
-    """
-    spec = _wav_to_spec(y, n_fft, hop_length, win_length, center=center)
-    spec = torch.sqrt(spec.pow(2).sum(-1) + 1e-6)
-    return spec
-
-
 def wav_to_energy(y, n_fft, hop_length, win_length, center=False):
-    spec = _wav_to_spec(y, n_fft, hop_length, win_length, center=center)
-
-    spec = torch.sqrt(spec.pow(2).sum(-1) + 1e-6)
+    spec = wav_to_spec(y, n_fft, hop_length, win_length, center=center)
     return torch.norm(spec, dim=1, keepdim=True)
-
-
-def name_mel_basis(spec, n_fft, fmax):
-    n_fft_len = f"{n_fft}_{fmax}_{spec.dtype}_{spec.device}"
-    return n_fft_len
-
-
-def spec_to_mel(spec, n_fft, num_mels, sample_rate, fmin, fmax):
-    """
-    Args Shapes:
-        - spec : :math:`[B,C,T]`
-
-    Return Shapes:
-        - mel : :math:`[B,C,T]`
-    """
-    global mel_basis  # pylint: disable=global-statement
-    mel_basis_key = name_mel_basis(spec, n_fft, fmax)
-    # pylint: disable=too-many-function-args
-    if mel_basis_key not in mel_basis:
-        # pylint: disable=missing-kwoa
-        mel = librosa_mel_fn(sample_rate, n_fft, num_mels, fmin, fmax)
-        mel_basis[mel_basis_key] = torch.from_numpy(mel).to(dtype=spec.dtype, device=spec.device)
-    mel = torch.matmul(mel_basis[mel_basis_key], spec)
-    mel = amp_to_db(mel)
-    return mel
-
-
-def wav_to_mel(y, n_fft, num_mels, sample_rate, hop_length, win_length, fmin, fmax, center=False):
-    """
-    Args Shapes:
-        - y : :math:`[B, 1, T_y]`
-
-    Return Shapes:
-        - spec : :math:`[B,C,T_spec]`
-    """
-    y = y.squeeze(1)
-
-    if torch.min(y) < -1.0:
-        logger.info("min value is %.3f", torch.min(y))
-    if torch.max(y) > 1.0:
-        logger.info("max value is %.3f", torch.max(y))
-
-    global mel_basis, hann_window  # pylint: disable=global-statement
-    mel_basis_key = name_mel_basis(y, n_fft, fmax)
-    wnsize_dtype_device = str(win_length) + "_" + str(y.dtype) + "_" + str(y.device)
-    if mel_basis_key not in mel_basis:
-        # pylint: disable=missing-kwoa
-        mel = librosa_mel_fn(
-            sr=sample_rate, n_fft=n_fft, n_mels=num_mels, fmin=fmin, fmax=fmax
-        )  # pylint: disable=too-many-function-args
-        mel_basis[mel_basis_key] = torch.from_numpy(mel).to(dtype=y.dtype, device=y.device)
-    if wnsize_dtype_device not in hann_window:
-        hann_window[wnsize_dtype_device] = torch.hann_window(win_length).to(dtype=y.dtype, device=y.device)
-
-    y = torch.nn.functional.pad(
-        y.unsqueeze(1),
-        (int((n_fft - hop_length) / 2), int((n_fft - hop_length) / 2)),
-        mode="reflect",
-    )
-    y = y.squeeze(1)
-
-    spec = torch.view_as_real(
-        torch.stft(
-            y,
-            n_fft,
-            hop_length=hop_length,
-            win_length=win_length,
-            window=hann_window[wnsize_dtype_device],
-            center=center,
-            pad_mode="reflect",
-            normalized=False,
-            onesided=True,
-            return_complex=True,
-        )
-    )
-
-    spec = torch.sqrt(spec.pow(2).sum(-1) + 1e-6)
-    spec = torch.matmul(mel_basis[mel_basis_key], spec)
-    spec = amp_to_db(spec)
-    return spec
 
 
 ##############################

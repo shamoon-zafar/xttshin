@@ -14,12 +14,9 @@ from TTS.tts.models.vits import (
     VitsArgs,
     VitsAudioConfig,
     load_audio,
-    spec_to_mel,
-    wav_to_mel,
-    wav_to_spec,
 )
 from TTS.tts.utils.speakers import SpeakerManager
-from TTS.utils.audio.torch_transforms import amp_to_db, db_to_amp
+from TTS.utils.audio.torch_transforms import amp_to_db, db_to_amp, spec_to_mel, wav_to_mel, wav_to_spec
 
 LANG_FILE = os.path.join(get_tests_input_path(), "language_ids.json")
 SPEAKER_ENCODER_CONFIG = os.path.join(get_tests_input_path(), "test_speaker_encoder_config.json")
