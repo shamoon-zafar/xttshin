@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 class Synthesizer(nn.Module):
     def __init__(
         self,
+        *,
         tts_checkpoint: str = "",
         tts_config_path: str = "",
         tts_speakers_file: str = "",
