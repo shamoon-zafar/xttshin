@@ -12,17 +12,16 @@ from torch.nn.utils.parametrizations import weight_norm
 from torch.nn.utils.parametrize import remove_parametrizations
 from trainer.io import load_fsspec
 
-import TTS.vc.modules.freevc.commons as commons
-import TTS.vc.modules.freevc.modules as modules
+import TTS.vc.layers.freevc.modules as modules
 from TTS.tts.layers.vits.discriminator import DiscriminatorS
 from TTS.tts.utils.helpers import sequence_mask
 from TTS.tts.utils.speakers import SpeakerManager
 from TTS.vc.configs.freevc_config import FreeVCConfig
+from TTS.vc.layers.freevc.commons import init_weights, rand_slice_segments
+from TTS.vc.layers.freevc.mel_processing import mel_spectrogram_torch
+from TTS.vc.layers.freevc.speaker_encoder.speaker_encoder import SpeakerEncoder as SpeakerEncoderEx
+from TTS.vc.layers.freevc.wavlm import get_wavlm
 from TTS.vc.models.base_vc import BaseVC
-from TTS.vc.modules.freevc.commons import init_weights
-from TTS.vc.modules.freevc.mel_processing import mel_spectrogram_torch
-from TTS.vc.modules.freevc.speaker_encoder.speaker_encoder import SpeakerEncoder as SpeakerEncoderEx
-from TTS.vc.modules.freevc.wavlm import get_wavlm
 from TTS.vocoder.models.hifigan_discriminator import DiscriminatorP
 
 logger = logging.getLogger(__name__)
@@ -385,7 +384,7 @@ class FreeVC(BaseVC):
         z_p = self.flow(z, spec_mask, g=g)
 
         # Randomly slice z and compute o using dec
-        z_slice, ids_slice = commons.rand_slice_segments(z, spec_lengths, self.segment_size)
+        z_slice, ids_slice = rand_slice_segments(z, spec_lengths, self.segment_size)
         o = self.dec(z_slice, g=g)
 
         return o, ids_slice, spec_mask, (z, z_p, m_p, logs_p, m_q, logs_q)

@@ -7,7 +7,7 @@ from torch.nn.utils.parametrize import remove_parametrizations
 
 from TTS.tts.layers.generic.normalization import LayerNorm2
 from TTS.tts.layers.generic.wavenet import fused_add_tanh_sigmoid_multiply
-from TTS.vc.modules.freevc.commons import init_weights
+from TTS.vc.layers.freevc.commons import init_weights
 from TTS.vocoder.models.hifigan_generator import get_padding
 
 LRELU_SLOPE = 0.1
