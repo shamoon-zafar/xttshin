@@ -31,7 +31,7 @@ class TestFreeVC(unittest.TestCase):
 
     @staticmethod
     def _create_inputs_inference():
-        source_wav = torch.rand(16000)
+        source_wav = torch.rand(15999)
         target_wav = torch.rand(16000)
         return source_wav, target_wav
 
@@ -96,8 +96,8 @@ class TestFreeVC(unittest.TestCase):
         source_wav, target_wav = self._create_inputs_inference()
         output_wav = model.voice_conversion(source_wav, target_wav)
         assert (
-            output_wav.shape[0] + config.audio.hop_length == source_wav.shape[0]
-        ), f"{output_wav.shape} != {source_wav.shape}"
+            output_wav.shape[0] == source_wav.shape[0] - source_wav.shape[0] % config.audio.hop_length
+        ), f"{output_wav.shape} != {source_wav.shape}, {config.audio.hop_length}"
 
     def test_train_step(self): ...
 
