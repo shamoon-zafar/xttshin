@@ -109,7 +109,11 @@ class TTS(nn.Module):
 
     @property
     def is_multi_speaker(self) -> bool:
-        if hasattr(self.synthesizer.tts_model, "speaker_manager") and self.synthesizer.tts_model.speaker_manager:
+        if (
+            self.synthesizer is not None
+            and hasattr(self.synthesizer.tts_model, "speaker_manager")
+            and self.synthesizer.tts_model.speaker_manager
+        ):
             return self.synthesizer.tts_model.speaker_manager.num_speakers > 1
         return False
 
@@ -123,7 +127,11 @@ class TTS(nn.Module):
             and ("xtts" in self.config.model or "languages" in self.config and len(self.config.languages) > 1)
         ):
             return True
-        if hasattr(self.synthesizer.tts_model, "language_manager") and self.synthesizer.tts_model.language_manager:
+        if (
+            self.synthesizer is not None
+            and hasattr(self.synthesizer.tts_model, "language_manager")
+            and self.synthesizer.tts_model.language_manager
+        ):
             return self.synthesizer.tts_model.language_manager.num_languages > 1
         return False
 
@@ -306,10 +314,6 @@ class TTS(nn.Module):
             speaker_name=speaker,
             language_name=language,
             speaker_wav=speaker_wav,
-            reference_wav=None,
-            style_wav=None,
-            style_text=None,
-            reference_speaker_name=None,
             split_sentences=split_sentences,
             **kwargs,
         )
