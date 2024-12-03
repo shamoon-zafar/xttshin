@@ -2,6 +2,7 @@ import logging
 import tempfile
 import warnings
 from pathlib import Path
+from typing import Optional
 
 from torch import nn
 
@@ -19,12 +20,13 @@ class TTS(nn.Module):
     def __init__(
         self,
         model_name: str = "",
-        model_path: str = None,
-        config_path: str = None,
-        vocoder_path: str = None,
-        vocoder_config_path: str = None,
+        *,
+        model_path: Optional[str] = None,
+        config_path: Optional[str] = None,
+        vocoder_path: Optional[str] = None,
+        vocoder_config_path: Optional[str] = None,
         progress_bar: bool = True,
-        gpu=False,
+        gpu: bool = False,
     ):
         """🐸TTS python interface that allows to load and use the released models.
 
