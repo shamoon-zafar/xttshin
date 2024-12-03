@@ -118,7 +118,7 @@ You can optionally disable sentence splitting for better coherence but more VRAM
 
 ```python
 from TTS.api import TTS
-tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2", gpu=True)
+tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to("cuda")
 
 # generate speech by cloning a voice using default settings
 tts.tts_to_file(text="It took me quite a long time to develop a voice, and now that I have it I'm not going to be silent.",
@@ -137,15 +137,15 @@ You can pass multiple audio files to the `speaker_wav` argument for better voice
 from TTS.api import TTS
 
 # using the default version set in 🐸TTS
-tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2", gpu=True)
+tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to("cuda")
 
 # using a specific version
 # 👀 see the branch names for versions on https://huggingface.co/coqui/XTTS-v2/tree/main
 # ❗some versions might be incompatible with the API
-tts = TTS("xtts_v2.0.2", gpu=True)
+tts = TTS("xtts_v2.0.2").to("cuda")
 
 # getting the latest XTTS_v2
-tts = TTS("xtts", gpu=True)
+tts = TTS("xtts").to("cuda")
 
 # generate speech by cloning a voice using default settings
 tts.tts_to_file(text="It took me quite a long time to develop a voice, and now that I have it I'm not going to be silent.",
@@ -160,7 +160,7 @@ You can do inference using one of the available speakers using the following cod
 
 ```python
 from TTS.api import TTS
-tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2", gpu=True)
+tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to("cuda")
 
 # generate speech by cloning a voice using default settings
 tts.tts_to_file(text="It took me quite a long time to develop a voice, and now that I have it I'm not going to be silent.",

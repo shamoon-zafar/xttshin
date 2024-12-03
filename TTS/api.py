@@ -35,21 +35,21 @@ class TTS(nn.Module):
             >>> tts.tts_to_file(text="Hello world!", speaker=tts.speakers[0], language=tts.languages[0], file_path="output.wav")
 
         Example with a single-speaker model:
-            >>> tts = TTS(model_name="tts_models/de/thorsten/tacotron2-DDC", progress_bar=False, gpu=False)
+            >>> tts = TTS(model_name="tts_models/de/thorsten/tacotron2-DDC", progress_bar=False)
             >>> tts.tts_to_file(text="Ich bin eine Testnachricht.", file_path="output.wav")
 
         Example loading a model from a path:
-            >>> tts = TTS(model_path="/path/to/checkpoint_100000.pth", config_path="/path/to/config.json", progress_bar=False, gpu=False)
+            >>> tts = TTS(model_path="/path/to/checkpoint_100000.pth", config_path="/path/to/config.json", progress_bar=False)
             >>> tts.tts_to_file(text="Ich bin eine Testnachricht.", file_path="output.wav")
 
         Example voice cloning with YourTTS in English, French and Portuguese:
-            >>> tts = TTS(model_name="tts_models/multilingual/multi-dataset/your_tts", progress_bar=False, gpu=True)
+            >>> tts = TTS(model_name="tts_models/multilingual/multi-dataset/your_tts", progress_bar=False).to("cuda")
             >>> tts.tts_to_file("This is voice cloning.", speaker_wav="my/cloning/audio.wav", language="en", file_path="thisisit.wav")
             >>> tts.tts_to_file("C'est le clonage de la voix.", speaker_wav="my/cloning/audio.wav", language="fr", file_path="thisisit.wav")
             >>> tts.tts_to_file("Isso é clonagem de voz.", speaker_wav="my/cloning/audio.wav", language="pt", file_path="thisisit.wav")
 
         Example Fairseq TTS models (uses ISO language codes in https://dl.fbaipublicfiles.com/mms/tts/all-tts-languages.html):
-            >>> tts = TTS(model_name="tts_models/eng/fairseq/vits", progress_bar=False, gpu=True)
+            >>> tts = TTS(model_name="tts_models/eng/fairseq/vits", progress_bar=False).to("cuda")
             >>> tts.tts_to_file("This is a test.", file_path="output.wav")
 
         Args:
