@@ -254,11 +254,6 @@ def parse_args() -> argparse.Namespace:
     )
     # aux args
     parser.add_argument(
-        "--save_spectogram",
-        action="store_true",
-        help="Save raw spectogram for further (vocoder) processing in out_path.",
-    )
-    parser.add_argument(
         "--reference_wav",
         type=str,
         help="Reference wav file to convert in the voice of the speaker_idx or speaker_wav",
