@@ -407,18 +407,18 @@ def main():
 
         # load models
         synthesizer = Synthesizer(
-            tts_path,
-            tts_config_path,
-            speakers_file_path,
-            language_ids_file_path,
-            vocoder_path,
-            vocoder_config_path,
-            encoder_path,
-            encoder_config_path,
-            vc_path,
-            vc_config_path,
-            model_dir,
-            args.voice_dir,
+            tts_checkpoint=tts_path,
+            tts_config_path=tts_config_path,
+            tts_speakers_file=speakers_file_path,
+            tts_languages_file=language_ids_file_path,
+            vocoder_checkpoint=vocoder_path,
+            vocoder_config=vocoder_config_path,
+            encoder_checkpoint=encoder_path,
+            encoder_config=encoder_config_path,
+            vc_checkpoint=vc_path,
+            vc_config=vc_config_path,
+            model_dir=model_dir,
+            voice_dir=args.voice_dir,
         ).to(device)
 
         # query speaker ids of a multi-speaker model.
@@ -429,7 +429,7 @@ def main():
             logger.info(
                 "Available speaker ids: (Set --speaker_idx flag to one of these values to use the multi-speaker model."
             )
-            logger.info(synthesizer.tts_model.speaker_manager.name_to_id)
+            logger.info(list(synthesizer.tts_model.speaker_manager.name_to_id.keys()))
             return
 
         # query langauge ids of a multi-lingual model.

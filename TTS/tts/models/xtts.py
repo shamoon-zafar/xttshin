@@ -93,25 +93,6 @@ def load_audio(audiopath, sampling_rate):
     return audio
 
 
-def pad_or_truncate(t, length):
-    """
-    Ensure a given tensor t has a specified sequence length by either padding it with zeros or clipping it.
-
-    Args:
-        t (torch.Tensor): The input tensor to be padded or truncated.
-        length (int): The desired length of the tensor.
-
-    Returns:
-        torch.Tensor: The padded or truncated tensor.
-    """
-    tp = t[..., :length]
-    if t.shape[-1] == length:
-        tp = t
-    elif t.shape[-1] < length:
-        tp = F.pad(t, (0, length - t.shape[-1]))
-    return tp
-
-
 @dataclass
 class XttsAudioConfig(Coqpit):
     """
@@ -779,6 +760,12 @@ class Xtts(BaseTTS):
 
         if os.path.exists(vocab_path):
             self.tokenizer = VoiceBpeTokenizer(vocab_file=vocab_path)
+        else:
+            msg = (
+                f"`vocab.json` file not found in `{checkpoint_dir}`. Move the file there or "
+                "specify alternative path in `model_args.tokenizer_file` in `config.json`"
+            )
+            raise FileNotFoundError(msg)
 
         self.init_models()
 
