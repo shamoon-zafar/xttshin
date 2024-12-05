@@ -11,7 +11,6 @@ import torchaudio
 from coqpit import Coqpit
 from trainer.io import load_fsspec
 
-from TTS.tts.configs.xtts_config import XttsConfig
 from TTS.tts.layers.xtts.gpt import GPT
 from TTS.tts.layers.xtts.hifigan_decoder import HifiDecoder
 from TTS.tts.layers.xtts.stream_generator import init_stream_support
@@ -103,10 +102,12 @@ class XttsAudioConfig(Coqpit):
     Args:
         sample_rate (int): The sample rate in which the GPT operates.
         output_sample_rate (int): The sample rate of the output audio waveform.
+        dvae_sample_rate (int): The sample rate of the DVAE
     """
 
     sample_rate: int = 22050
     output_sample_rate: int = 24000
+    dvae_sample_rate: int = 22050
 
 
 @dataclass
@@ -721,7 +722,7 @@ class Xtts(BaseTTS):
 
     def load_checkpoint(
         self,
-        config: XttsConfig,
+        config: "XttsConfig",
         checkpoint_dir: Optional[str] = None,
         checkpoint_path: Optional[str] = None,
         vocab_path: Optional[str] = None,
