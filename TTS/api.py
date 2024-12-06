@@ -9,7 +9,6 @@ from typing import Optional
 from torch import nn
 
 from TTS.config import load_config
-from TTS.utils.audio.numpy_transforms import save_wav
 from TTS.utils.manage import ModelManager
 from TTS.utils.synthesizer import Synthesizer
 
@@ -394,6 +393,7 @@ class TTS(nn.Module):
         source_wav: str,
         target_wav: str,
         file_path: str = "output.wav",
+        pipe_out=None,
     ) -> str:
         """Voice conversion with FreeVC. Convert source wav to target speaker.
 
@@ -404,9 +404,11 @@ class TTS(nn.Module):
                 Path to the target wav file.
             file_path (str, optional):
                 Output file path. Defaults to "output.wav".
+            pipe_out (BytesIO, optional):
+                Flag to stdout the generated TTS wav file for shell pipe.
         """
         wav = self.voice_conversion(source_wav=source_wav, target_wav=target_wav)
-        save_wav(wav=wav, path=file_path, sample_rate=self.voice_converter.vc_config.audio.output_sample_rate)
+        self.voice_converter.save_wav(wav=wav, path=file_path, pipe_out=pipe_out)
         return file_path
 
     def tts_with_vc(
@@ -459,6 +461,7 @@ class TTS(nn.Module):
         file_path: str = "output.wav",
         speaker: str = None,
         split_sentences: bool = True,
+        pipe_out=None,
     ) -> str:
         """Convert text to speech with voice conversion and save to file.
 
@@ -482,9 +485,11 @@ class TTS(nn.Module):
                 Split text into sentences, synthesize them separately and concatenate the file audio.
                 Setting it False uses more VRAM and possibly hit model specific text length or VRAM limits. Only
                 applicable to the 🐸TTS models. Defaults to True.
+            pipe_out (BytesIO, optional):
+                Flag to stdout the generated TTS wav file for shell pipe.
         """
         wav = self.tts_with_vc(
             text=text, language=language, speaker_wav=speaker_wav, speaker=speaker, split_sentences=split_sentences
         )
-        save_wav(wav=wav, path=file_path, sample_rate=self.voice_converter.vc_config.audio.output_sample_rate)
+        self.voice_converter.save_wav(wav=wav, path=file_path, pipe_out=pipe_out)
         return file_path
